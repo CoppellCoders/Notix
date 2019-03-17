@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_height="match_parent"
+    android:id="@+id/searchcont"
+    android:layout_marginBottom="45dp"
+    tools:context=".HomeFragment">
+
+
+    <FrameLayout
+        android:background="@drawable/background_forall"
+        android:layout_width="wrap_content"
+
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:text="Search"
+            android:textColor="@android:color/white"
+            android:textStyle="bold"
+            android:textSize="28dp"
+            android:layout_marginLeft="20dp"
+            android:layout_gravity="center|left"
+            android:layout_marginBottom="25dp"
+            android:layout_height="wrap_content" />
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/search_btn"
+            android:layout_gravity="center|right"
+            android:layout_marginRight="20dp"
+            android:layout_marginBottom="-15dp"
+            android:background="@drawable/searchiconwhite" />
+        <EditText
+            android:id="@+id/editTextSearch"
+            android:layout_width="300dp"
+            android:hint="Search events..."
+            android:textColor="#414141"
+            android:paddingLeft="20dp"
+            android:textSize="16dp"
+            android:background="@drawable/searchbox"
+            android:layout_marginLeft="10dp"
+
+            android:paddingBottom="5dp"
+            android:layout_gravity="center|left"
+            android:layout_marginBottom="-20dp"
+            android:layout_height="wrap_content" />
+
+
+    </FrameLayout>
+    <TextView
+        android:layout_width="wrap_content"
+        android:text="Event Category"
+        android:textColor="#474747"
+        android:textStyle="bold"
+        android:textSize="20dp"
+
+        android:layout_marginLeft="20dp"
+        android:layout_gravity="center|left"
+        android:layout_marginTop="15dp"
+        android:layout_height="wrap_content" />
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/caterecy"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+
+        android:orientation="horizontal"
+
+        />
+
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/search_recy"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="15dp"
+        />
+
+</LinearLayout>
