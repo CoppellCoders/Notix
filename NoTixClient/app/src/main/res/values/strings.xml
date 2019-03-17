@@ -1,8 +1,13 @@
 <resources>
     <string name="app_name">NoTix</string>
     <string name="title_home">Home</string>
-    <string name="title_dashboard">Dashboard</string>
-    <string name="title_notifications">Notifications</string>
-    <string name="default_web_client_iddddd">407692619500-mij9gh94bb4iejh9vvthjaa4m7s8catk.apps.googleusercontent.com</string>
+    <string name="title_mytix">My Tickets</string>
+    <string name="title_sell">Sell</string>
+    <string name="title_profile">Profile</string>
+
+    <string name="default_web_client_iddddd">407692619500-47o16p0j9r62euiavkclan3l57b13hua.apps.googleusercontent.com</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

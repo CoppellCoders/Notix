@@ -84,7 +84,7 @@ GoogleSignInClient mGoogleSignInClient;
                 firebaseAuthWithGoogle(account);
             } catch (ApiException e) {
                 // Google Sign In failed, update UI appropriately
-                System.out.println("nibba" + e.toString());
+                System.out.println("nibba" + e.getStackTrace().toString());
                 Snackbar.make(findViewById(R.id.loginsnack), "Authentication Failed.", Snackbar.LENGTH_SHORT).show();
                 // ...
             }
