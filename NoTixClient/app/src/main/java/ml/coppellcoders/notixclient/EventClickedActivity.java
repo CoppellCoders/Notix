@@ -29,6 +29,7 @@ public class EventClickedActivity extends AppCompatActivity {
     ImageView img;
     TextView addr, price, title,date;
     Button checkout;
+    int quan =0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -112,7 +113,10 @@ public class EventClickedActivity extends AppCompatActivity {
         checkout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getApplication(),"Clicked",Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(getApplicationContext(), CheckoutActivity.class);
+                intent.putExtra("event", event);
+                intent.putExtra("num", quan);
+                startActivity(intent);
             }
         });
 
@@ -133,7 +137,7 @@ public class EventClickedActivity extends AppCompatActivity {
         adapter.setListener(new RecyclerViewAdapter.Listener<Integer>() {
             @Override
             public void onClick(@NonNull Integer s) {
-
+                quan =s;
                 if(event.price!=0)
                 price.setText(String.format("$%.2f",s*event.getPrice()));
                 else
