@@ -78,23 +78,7 @@ public class Search extends Fragment {
         });
 
 
-        adapter.setListener(new RecyclerViewAdapter.Listener<String>() {
-            @Override
-            public void onClick(@NonNull String s) {
-                query(s);
-            }
-        });
-        mAdapterEvent.setListener(new RecyclerViewAdapter.Listener<EventModel>() {
-            @Override
-            public void onClick(@NonNull EventModel eventAdapter) {
-                Intent intent = new Intent(getContext(), EventClickedActivity.class);
-                intent.putExtra("event", eventAdapter);
-                startActivity(intent);
-            }
 
-
-
-        });
 return view;
     }
 
@@ -128,6 +112,23 @@ return view;
 
                         mAdapterEvent = new EventAdapter(data, getContext());
                         searchrecy.setAdapter(mAdapterEvent);
+                        adapter.setListener(new RecyclerViewAdapter.Listener<String>() {
+                            @Override
+                            public void onClick(@NonNull String s) {
+                                query(s);
+                            }
+                        });
+                        mAdapterEvent.setListener(new RecyclerViewAdapter.Listener<EventModel>() {
+                            @Override
+                            public void onClick(@NonNull EventModel eventAdapter) {
+                                Intent intent = new Intent(getContext(), EventClickedActivity.class);
+                                intent.putExtra("event", eventAdapter);
+                                startActivity(intent);
+                            }
+
+
+
+                        });
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
