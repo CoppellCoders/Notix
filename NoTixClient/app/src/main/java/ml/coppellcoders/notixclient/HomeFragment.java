@@ -20,6 +20,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 public class HomeFragment extends Fragment {
@@ -60,6 +61,29 @@ public class HomeFragment extends Fragment {
                         mAdapterEvent = new EventAdapter(data, getContext());
                         trending.setAdapter(mAdapter);
                         nearby.setAdapter(mAdapterEvent);
+                        mAdapter.setListener(new RecyclerViewAdapter.Listener<EventModel>() {
+                            @Override
+                            public void onClick(@NonNull EventModel eventAdapter) {
+                                Intent intent = new Intent(getContext(), EventClickedActivity.class);
+                                intent.putExtra("event", eventAdapter);
+                                startActivity(intent);
+                            }
+
+
+
+                        });
+                        mAdapterEvent.setListener(new RecyclerViewAdapter.Listener<EventModel>() {
+                            @Override
+                            public void onClick(@NonNull EventModel eventAdapter) {
+                                Intent intent = new Intent(getContext(), EventClickedActivity.class);
+                                intent.putExtra("event", eventAdapter);
+                                startActivity(intent);
+                            }
+
+
+
+
+                        });
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
@@ -97,6 +121,12 @@ public class HomeFragment extends Fragment {
                 changeFragment(new Search());
             }
         });
+
+
+
+
+
+
 
         return view;
     }

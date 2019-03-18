@@ -86,4 +86,18 @@ class EventModel implements Serializable {
     public void setQuantity(double quantity) {
         this.quantity = quantity;
     }
+
+    @Override
+    public String toString() {
+        return "EventModel{" +
+                "time=" + time +
+                ", img='" + img + '\'' +
+                ", name='" + name + '\'' +
+                ", venue='" + venue + '\'' +
+                ", category='" + category + '\'' +
+                ", address='" + address + '\'' +
+                ", price=" + price +
+                ", quantity=" + quantity +
+                '}';
+    }
 }

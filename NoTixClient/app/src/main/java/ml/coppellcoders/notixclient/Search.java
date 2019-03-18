@@ -1,5 +1,6 @@
 package ml.coppellcoders.notixclient;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -83,7 +84,17 @@ public class Search extends Fragment {
                 query(s);
             }
         });
+        mAdapterEvent.setListener(new RecyclerViewAdapter.Listener<EventModel>() {
+            @Override
+            public void onClick(@NonNull EventModel eventAdapter) {
+                Intent intent = new Intent(getContext(), EventClickedActivity.class);
+                intent.putExtra("event", eventAdapter);
+                startActivity(intent);
+            }
 
+
+
+        });
 return view;
     }
 
