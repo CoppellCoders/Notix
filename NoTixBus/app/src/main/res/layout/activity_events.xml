@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:src="@drawable/background"
+        />
+    <TextView
+        android:layout_width="wrap_content"
+        android:text="My Events"
+        android:textSize="24dp"
+        android:textColor="#ffffff"
+        android:layout_centerVertical="true"
+        android:paddingLeft="25dp"
+        android:layout_height="wrap_content" />
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/add_event"
+        android:id="@+id/add_event"
+        android:layout_centerVertical="true"
+        android:paddingRight="25dp"
+        android:layout_alignParentRight="true"
+        />
+</RelativeLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:id="@+id/events_recycler_view"
+        android:layout_height="match_parent">
+
+    </android.support.v7.widget.RecyclerView>
+</LinearLayout>

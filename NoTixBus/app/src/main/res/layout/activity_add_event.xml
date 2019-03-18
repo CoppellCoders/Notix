@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_height="match_parent">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:src="@drawable/background"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:text="Add Event"
+            android:textSize="24dp"
+            android:textColor="#ffffff"
+            android:layout_centerVertical="true"
+            android:paddingLeft="25dp"
+            android:layout_height="wrap_content" />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/event_item_bg"
+        android:orientation="vertical"
+        >
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Event Detail"
+        android:textSize="24dp"
+        android:textColor="#000000"
+        android:padding="25dp"
+        />
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/add_event_bg"
+            android:layout_marginRight="25dp"
+            android:layout_marginLeft="25dp"
+            android:textColor="#ffffff"
+            android:id="@+id/add_event_name"
+            android:textColorHint="#ffffff"
+            android:hint="Name"
+            />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="2"
+        android:layout_marginTop="10dp"
+        >
+        <EditText
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:textColorHint="#ffffff"
+            android:inputType="date"
+            android:hint="Date"
+            android:id="@+id/add_event_date"
+            android:textColor="#ffffff"
+            android:layout_marginRight="25dp"
+            android:layout_marginLeft="25dp"
+            android:background="@drawable/add_event_bg"
+            />
+        <EditText
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:textColorHint="#ffffff"
+            android:id="@+id/add_event_time"
+            android:inputType="time"
+            android:hint="Time"
+            android:textColor="#ffffff"
+            android:layout_marginRight="25dp"
+            android:layout_marginLeft="25dp"
+            android:background="@drawable/add_event_bg"
+            />
+
+
+    </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="2"
+            android:layout_marginTop="10dp"
+
+            >
+            <EditText
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:textColorHint="#ffffff"
+                android:hint="Ticket Price"
+                android:id="@+id/add_event_price"
+                android:inputType="numberDecimal"
+                android:textColor="#ffffff"
+                android:layout_marginRight="25dp"
+                android:layout_marginLeft="25dp"
+                android:background="@drawable/add_event_bg"
+                />
+            <EditText
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:textColorHint="#ffffff"
+                android:hint="Quantity"
+                android:id="@+id/add_event_quantity"
+                android:inputType="number"
+                android:textColor="#ffffff"
+                android:layout_marginRight="25dp"
+                android:layout_marginLeft="25dp"
+                android:background="@drawable/add_event_bg"
+                />
+
+
+        </LinearLayout>
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/add_event_bg"
+            android:layout_marginRight="25dp"
+            android:layout_marginLeft="25dp"
+            android:textColor="#ffffff"
+            android:textColorHint="#ffffff"
+            android:hint="Venue"
+            android:id="@+id/add_event_venue"
+            android:layout_marginTop="10dp"
+            />
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/add_event_bg"
+            android:layout_marginRight="25dp"
+            android:layout_marginLeft="25dp"
+            android:textColor="#ffffff"
+            android:id="@+id/add_event_venue_address"
+            android:textColorHint="#ffffff"
+            android:layout_marginTop="10dp"
+            android:hint="Venue Address"
+            />
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/add_event_button_bg"
+            android:text="Create Event"
+            android:gravity="center"
+            android:id="@+id/add_event_create"
+            android:textColor="#ffffff" />
+    </LinearLayout>
+
+</LinearLayout>
