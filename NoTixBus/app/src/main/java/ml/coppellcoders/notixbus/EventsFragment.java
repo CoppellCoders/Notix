@@ -64,7 +64,11 @@ public class EventsFragment extends Fragment {
                 ea.setListener(new RecyclerViewAdapter.Listener<Event>() {
                     @Override
                     public void onClick(@NonNull Event event) {
-                        //startActivity(new Intent(getContext(), AddEventActivity.class));
+                        Intent goToEventDetails = new Intent(getContext(), ScanActivity.class);
+                        goToEventDetails.putExtra("name", event.getName());
+                        goToEventDetails.putExtra("image", event.getImg());
+                        goToEventDetails.putExtra("time", event.getTime());
+                        startActivity(goToEventDetails);
                     }
                 });
             }
