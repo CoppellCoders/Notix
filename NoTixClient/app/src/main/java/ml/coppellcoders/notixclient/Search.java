@@ -99,7 +99,8 @@ return view;
 
                         System.out.println(dataSnapshot.toString());
                         EventModel model = dataSnapshot.getValue(EventModel.class);
-
+                        final String key = dataSnapshot.getKey();
+                        model.setKey(key);
                         if(model.getName().toLowerCase().contains(params.toLowerCase())||model.getCategory().toLowerCase().contains(params.toLowerCase())||params.equals("")){
                             data.add(model);
                         }

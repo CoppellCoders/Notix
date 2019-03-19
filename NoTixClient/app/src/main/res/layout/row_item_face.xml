@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:paddingBottom="20dp"
+    android:layout_width="wrap_content"
+    android:layout_marginLeft="10dp"
+    android:layout_marginRight="10dp"
+    android:background="@drawable/face_recybox"
+    android:layout_height="wrap_content">
+
+
+
+
+        <ImageView
+            android:id="@+id/face_img"
+            android:layout_width="119dp"
+            android:src="@android:color/transparent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/default_face_recy"
+android:layout_gravity="center"
+
+            android:scaleType="centerCrop"
+            />
+
+
+        <TextView
+            android:id="@+id/face_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:textSize="12dp"
+            android:textColor="#414141"
+            android:layout_marginTop="3dp"
+         android:layout_gravity="center"
+            android:text="Darshan Bhatta"/>
+
+
+
+
+
+<FrameLayout
+    android:layout_width="wrap_content"
+    android:id="@+id/removeface_btn"
+    android:background="@drawable/trendingprice_box"
+    android:layout_gravity="center"
+android:backgroundTint="#FF8D8D"
+    android:layout_marginTop="12dp"
+
+    android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/event_price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:layout_marginTop="2dp"
+            android:text="Remove"
+            android:layout_gravity="center|top"
+
+            android:textColor="#FFFFFF"
+            android:textSize="10dp" />
+
+</FrameLayout>
+
+
+</LinearLayout>

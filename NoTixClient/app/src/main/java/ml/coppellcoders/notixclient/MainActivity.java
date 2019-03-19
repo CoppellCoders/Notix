@@ -25,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
                     changeFragment(new HomeFragment());
                     return true;
                 case R.id.navigation_mytix:
-                    mTextMessage.setText(R.string.title_mytix);
+                    changeFragment(new MyTickets());
                     return true;
                 case R.id.navigation_sell:
                     mTextMessage.setText(R.string.title_sell);

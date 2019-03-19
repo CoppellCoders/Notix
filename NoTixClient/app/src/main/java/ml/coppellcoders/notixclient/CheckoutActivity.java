@@ -19,7 +19,7 @@ import com.squareup.picasso.Picasso;
 import java.util.Calendar;
 
 public class CheckoutActivity extends AppCompatActivity {
-    private DatabaseReference mFirebaseRef;
+    private DatabaseReference mFirebaseRef,mFirebaseRefBus;
 
     ImageView img;
 
@@ -48,6 +48,12 @@ public class CheckoutActivity extends AppCompatActivity {
 
         final EventModel event = (EventModel)i.getSerializableExtra("event");
         final int quant = i.getIntExtra("num",1);
+        final String name = i.getStringExtra("name");
+        final String imgurl = i.getStringExtra("img");
+
+        if(name!=null){
+            face.setText(name);
+        }
 
             Picasso.with(getApplicationContext()).load(event.getImg()).fit().centerCrop().into(img);
 
@@ -56,7 +62,7 @@ public class CheckoutActivity extends AppCompatActivity {
         FirebaseUser currentFirebaseUser = FirebaseAuth.getInstance().getCurrentUser() ;
 
         mFirebaseRef = database.getReference("Users").child(currentFirebaseUser.getUid()).child("tickets");
-
+        mFirebaseRefBus = database.getReference("Events").child(event.getKey()).child("tickets");
         title.setText(event.getName());
 
             subt.setText(String.format("$%.2f",quant*event.getPrice()));
@@ -103,14 +109,21 @@ public class CheckoutActivity extends AppCompatActivity {
             public void onClick(View view) {
                 pushid[0] = mFirebaseRef.push().getKey();
 
-                mFirebaseRef.push().setValue(new BuyInfoModel(event.getDate(),event.getImg(),event.getName(),event.getVenue(),event.getCategory(),event.getAddress(),event.getPrice(),event.getQuantity(),quant)).addOnSuccessListener(new OnSuccessListener<Void>() {
+                mFirebaseRef.push().setValue(new BuyInfoModel(event.getDate(),event.getImg(),event.getName(),event.getVenue(),event.getCategory(),event.getAddress(),imgurl,name,event.getPrice(),event.getQuantity(),quant)).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
+                        mFirebaseRefBus.push().setValue(new BuyInfoModel(event.getDate(),event.getImg(),event.getName(),event.getVenue(),event.getCategory(),event.getAddress(),imgurl,name,event.getPrice(),event.getQuantity(),quant)).addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
 
-                        Intent intent = new Intent(getApplicationContext(), SuccessActivity.class);
-                        intent.putExtra("num", pushid[0]);
-                        startActivity(intent);
-                        finish();
+                                Intent intent = new Intent(getApplicationContext(), SuccessActivity.class);
+                                intent.putExtra("num", pushid[0]);
+                                startActivity(intent);
+                                finish();
+
+                            }
+                        });
+
 
                     }
                 });
@@ -118,6 +131,17 @@ public class CheckoutActivity extends AppCompatActivity {
             }
         });
 
+        face.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(), FaceSelectActivity.class);
+                intent.putExtra("event", event);
+                intent.putExtra("num", quant);
+                startActivity(intent);
+
+
+            }
+        });
 
 
 

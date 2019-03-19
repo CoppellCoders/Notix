@@ -5,7 +5,7 @@ import java.io.Serializable;
 class EventModel implements Serializable {
 
     Long time;
-    String img,name, venue, category, address;
+    String img,name, venue, category, address,key;
     double price, quantity;
 
     public EventModel(Long time, String img, String name, String venue, String category, String address, double price, double quantity) {
@@ -39,6 +39,17 @@ class EventModel implements Serializable {
         this.img = img;
     }
 
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
+
+    public String getVenue() {
+        return venue;
+    }
     public String getName() {
         return name;
     }
@@ -46,11 +57,6 @@ class EventModel implements Serializable {
     public void setName(String name) {
         this.name = name;
     }
-
-    public String getVenue() {
-        return venue;
-    }
-
     public void setVenue(String venue) {
         this.venue = venue;
     }

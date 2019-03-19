@@ -2,7 +2,10 @@ package ml.coppellcoders.notixclient;
 
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
+import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -56,7 +59,10 @@ public class EventAdapter extends RecyclerViewAdapter<EventModel, EventAdapter.I
             super.bind(position);
             final EventModel events = get(position);
 
+            if(events.getImg().contains("http"))
             Picasso.with(context).load(events.getImg()).fit().centerCrop().into(img);
+            else
+                img.setImageBitmap(decodeBase64(events.getImg()));
             System.out.println(events.getImg());
             title.setText(events.getName());
 
@@ -87,5 +93,10 @@ public class EventAdapter extends RecyclerViewAdapter<EventModel, EventAdapter.I
                 price.setText("Free");
             }
         }
+    }
+    public static Bitmap decodeBase64(String input)
+    {
+        byte[] decodedBytes = Base64.decode(input, 0);
+        return BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
     }
 }

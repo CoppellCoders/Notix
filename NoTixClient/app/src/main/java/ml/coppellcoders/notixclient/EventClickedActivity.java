@@ -1,6 +1,8 @@
 package ml.coppellcoders.notixclient;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -8,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Base64;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -61,11 +64,13 @@ public class EventClickedActivity extends AppCompatActivity {
         Intent i = getIntent();
 
         final EventModel event = (EventModel)i.getSerializableExtra("event");
-
         System.out.println(event.toString());
 
+        if(event.getImg().contains("http"))
+            Picasso.with(getApplicationContext()).load(event.getImg()).fit().centerCrop().into(img);
+        else
+            img.setImageBitmap(decodeBase64(event.getImg()));
 
-        Picasso.with(getApplicationContext()).load(event.getImg()).fit().centerCrop().into(img);
 
         title.setText(event.getName());
 
@@ -150,5 +155,10 @@ public class EventClickedActivity extends AppCompatActivity {
 
 
 
+    }
+    public static Bitmap decodeBase64(String input)
+    {
+        byte[] decodedBytes = Base64.decode(input, 0);
+        return BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
     }
 }

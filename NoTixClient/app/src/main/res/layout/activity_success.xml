@@ -7,57 +7,62 @@
     android:background="@drawable/background"
     tools:context=".SuccessActivity">
 
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="-90dp"
-        android:background="@drawable/check_mark"/>
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_gravity="center"
-        android:text="Congratulations"
-        android:textSize="25dp"
-        android:textStyle="bold"
-        android:textColor="@android:color/white"
-        android:layout_height="wrap_content" />
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_gravity="center"
 
-        android:textAlignment="center"
-        android:text="Your order has been placed"
-        android:textSize="23dp"
-        android:layout_marginTop="45dp"
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginBottom="90dp"
+            android:background="@drawable/check_mark"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_gravity="center"
+            android:text="Congratulations"
+            android:textSize="25dp"
+            android:textStyle="bold"
+            android:textColor="@android:color/white"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_gravity="center"
 
-        android:textColor="@android:color/white"
-        android:layout_height="wrap_content" />
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_gravity="center"
-        android:id="@+id/ordernumber"
-        android:textAlignment="center"
-        android:text="Order ID: ddfdfdfdfdfdfdfdfd"
-        android:textSize="23dp"
-        android:layout_marginTop="80dp"
+            android:textAlignment="center"
+            android:text="Your order has been placed"
+            android:textSize="23dp"
+            android:layout_marginTop="45dp"
 
-        android:textColor="@android:color/white"
-        android:layout_height="wrap_content" />
+            android:textColor="@android:color/white"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_gravity="center"
+            android:id="@+id/ordernumber"
+            android:textAlignment="center"
+            android:text="Order ID: ddfdfdfdfdfdfdfdfd"
+            android:textSize="18dp"
+            android:layout_marginTop="80dp"
+
+            android:textColor="@android:color/white"
+            android:layout_height="wrap_content" />
 
 
-    <Button
+        <Button
 
-        android:layout_width="wrap_content"
-        android:background="@drawable/sucess_takeme"
-        android:layout_gravity="center"
-        android:textColor="#0081FA"
-        android:text="Take me Home"
-        android:paddingBottom="8dp"
-        android:textSize="23dp"
-        android:textStyle="bold"
-        android:id="@+id/takemehome_btn"
-        android:textAllCaps="false"
-        android:layout_marginTop="140dp"
-        android:layout_height="wrap_content" />
+            android:layout_width="wrap_content"
+            android:background="@drawable/sucess_takeme"
+            android:layout_gravity="center"
+            android:textColor="#0081FA"
+            android:text="Take me Home"
+            android:paddingBottom="8dp"
+            android:textSize="23dp"
+            android:textStyle="bold"
+            android:id="@+id/takemehome_btn"
+            android:textAllCaps="false"
+            android:layout_marginTop="140dp"
+            android:layout_height="wrap_content" />
+
+
+
+
 
 </FrameLayout>

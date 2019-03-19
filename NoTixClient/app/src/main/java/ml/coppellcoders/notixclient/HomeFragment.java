@@ -50,10 +50,11 @@ public class HomeFragment extends Fragment {
 
                         System.out.println(dataSnapshot.toString());
                         EventModel model = dataSnapshot.getValue(EventModel.class);
-
-
+                        final String key = dataSnapshot.getKey();
+                        model.setKey(key);
                         data.add(model);
 
+                        System.out.println("nibba " + key);
 
                         trending.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
                         nearby.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
@@ -77,6 +78,7 @@ public class HomeFragment extends Fragment {
                             public void onClick(@NonNull EventModel eventAdapter) {
                                 Intent intent = new Intent(getContext(), EventClickedActivity.class);
                                 intent.putExtra("event", eventAdapter);
+
                                 startActivity(intent);
                             }
 
