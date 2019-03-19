@@ -28,6 +28,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -140,7 +141,10 @@ public class ScanActivity extends Activity {
                                 boolean a = faceServiceClient.verify(firstUserId, curUserId).isIdentical;
                                 if(a){
                                     System.out.println("Found ticket exiting");
+                                    Toast.makeText(ScanActivity.this, "Match Found", Toast.LENGTH_LONG).show();
+                                    break;
                                 }else{
+                                    Toast.makeText(ScanActivity.this, "Not Found, Next", Toast.LENGTH_SHORT).show();
                                     System.out.println("No match moving on");
                                 }
                             }catch (Exception e){
