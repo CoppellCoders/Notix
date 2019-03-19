@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:paddingBottom="20dp"
+    android:layout_width="wrap_content"
+    android:layout_marginLeft="10dp"
+    android:layout_marginRight="10dp"
+    android:background="@drawable/eventcard_box"
+    android:layout_height="wrap_content">
+
+
+
+
+        <ImageView
+            android:id="@+id/event_img"
+            android:layout_width="323dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/sample_img"
+android:layout_gravity="center"
+
+            android:scaleType="centerCrop"
+            />
+
+
+        <TextView
+            android:id="@+id/event_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:textColor="#414141"
+            android:layout_marginTop="3dp"
+            android:layout_marginLeft="19dp"
+            android:text="Brother Hackathon"/>
+
+        <TextView
+            android:id="@+id/event_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12dp"
+            android:textColor="#414141"
+            android:layout_marginLeft="19dp"
+            android:text="Apr 26"/>
+
+        <TextView
+            android:id="@+id/event_venue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="10dp"
+            android:textColor="#414141"
+
+            android:layout_marginLeft="19dp"
+            android:text="Dallas Makerspace"/>
+
+<FrameLayout
+    android:layout_width="wrap_content"
+    android:background="@drawable/trendingprice_box"
+    android:layout_marginLeft="19dp"
+    android:layout_marginTop="5dp"
+    android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/event_price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:layout_marginTop="2dp"
+            android:text=" 4 hours and 30mins"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:layout_gravity="center|top"
+
+            android:textColor="#FFFFFF"
+            android:textSize="10dp" />
+
+</FrameLayout>
+
+
+</LinearLayout>

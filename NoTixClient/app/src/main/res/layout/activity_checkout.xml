@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/checkcont"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+
+    android:orientation="vertical"
+    tools:context=".EventClickedActivity">
+
+    <ImageView
+        android:id="@+id/check_img"
+        android:layout_width="match_parent"
+        android:layout_height="130dp" />
+
+
+    <TextView
+        android:id="@+id/title_check"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="10dp"
+        android:text="Brother Hackathon"
+        android:textColor="#616161"
+        android:textSize="25dp"
+        android:textStyle="bold" />
+
+    <TextView
+
+        android:id="@+id/date_click"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="15dp"
+        android:text="Apr 20, 9pm"
+        android:textColor="#616161"
+        android:textSize="20dp" />
+
+
+    <Button
+        android:id="@+id/androidpay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="15dp"
+        android:background="@drawable/androidpay" />
+
+    <Button
+        android:id="@+id/payment_check"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="15dp"
+        android:background="@drawable/payment_back"
+        android:text="Select a Credit/Debit Card"
+        android:textAllCaps="false"
+        android:textColor="@android:color/white"
+        android:textSize="20dp" />
+
+
+    <Button
+        android:id="@+id/face_check"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="15dp"
+        android:background="@drawable/payment_back"
+        android:text="Select a Face"
+        android:textAllCaps="false"
+        android:textColor="@android:color/white"
+        android:textSize="20dp" />
+
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/finalpay_back"
+        android:orientation="vertical">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="45dp"
+            android:layout_marginTop="25dp"
+            android:layout_marginRight="45dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:alpha=".6"
+                android:text="Subtotal"
+                android:textSize="16dp" />
+
+            <TextView
+                android:id="@+id/check_subtotal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:text="$160.00"
+                android:textSize="16dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="25dp"
+                android:alpha=".6"
+                android:text="Fees"
+                android:textSize="16dp" />
+
+            <TextView
+                android:id="@+id/check_fees"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:layout_marginTop="25dp"
+                android:text="$0.00"
+                android:textSize="16dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="50dp"
+                android:alpha=".6"
+                android:text="Tax"
+                android:textSize="16dp" />
+
+            <TextView
+                android:id="@+id/check_tax"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:layout_marginTop="50dp"
+                android:text="$0.00"
+                android:textSize="16dp" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="78dp"
+                android:background="@drawable/line_payment" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="90dp"
+                android:alpha=".6"
+                android:text="Total"
+                android:textSize="18dp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/check_total"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:layout_marginTop="90dp"
+                android:text="$0.00"
+                android:textSize="18dp"
+                android:textStyle="bold" />
+        </FrameLayout>
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/check_checkout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:layout_gravity="center"
+        android:layout_marginTop="-20dp"
+        android:background="@drawable/checkoutbtn"
+        android:gravity="center"
+        android:paddingBottom="10dp"
+        android:text="Buy"
+        android:textAllCaps="false"
+        android:textColor="@android:color/white"
+        android:textSize="20dp" />
+
+</LinearLayout>

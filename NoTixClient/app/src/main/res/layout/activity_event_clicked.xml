@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_height="match_parent"
+    android:id="@+id/clickedcont"
+    tools:context=".EventClickedActivity">
+
+    <ImageView
+        android:id="@+id/quan_img"
+        android:layout_width="match_parent"
+        android:layout_height="130dp" />
+
+<FrameLayout
+    android:layout_width="match_parent"
+    android:layout_marginTop="10dp"
+    android:layout_height="wrap_content">
+
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:text="Brother Hackathon"
+        android:id="@+id/title_clicked"
+        android:textColor="#616161"
+        android:layout_marginLeft="15dp"
+        android:textStyle="bold"
+        android:textSize="21dp"
+        android:layout_height="wrap_content" />
+
+    <ImageButton
+        android:id="@+id/sharebtn"
+        android:layout_width="wrap_content"
+        android:layout_gravity="right"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="15dp"
+        android:layout_marginTop="3dp"
+        android:background="@drawable/share_btn"/>
+
+</FrameLayout>
+
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:background="@drawable/place_cardbox"
+        android:layout_gravity="center"
+        android:layout_marginTop="50dp"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/adrr_click"
+            android:layout_width="wrap_content"
+            android:text="Dallas Makerspace\nCarrollton, TX 75006"
+            android:textAlignment="center"
+            android:layout_gravity="center"
+            android:layout_marginTop="-25dp"
+            android:textColor="#676767"
+            android:textSize="18dp"
+            android:layout_height="wrap_content" />
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:id="@+id/direction_btn"
+            android:background="@drawable/direction_btn"
+            android:layout_gravity="center|bottom"
+            android:layout_marginBottom="30dp"
+            android:layout_height="wrap_content" />
+
+    </FrameLayout>
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:background="@drawable/event_click_back"
+            android:layout_gravity="bottom"
+            android:orientation="vertical"
+            android:layout_height="wrap_content">
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:text="Quantity"
+                android:textColor="#676767"
+                android:textStyle="bold"
+                android:textSize="22dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginLeft="20dp"
+                android:layout_height="wrap_content" />
+
+            <android.support.v7.widget.RecyclerView
+                android:layout_width="wrap_content"
+                android:id="@+id/quanrecy"
+
+                android:layout_height="60dp">
+
+            </android.support.v7.widget.RecyclerView>
+            <TextView
+                android:id="@+id/quan_price"
+                android:layout_width="wrap_content"
+
+                android:layout_marginBottom="10dp"
+                android:drawableLeft="@drawable/moneyicon"
+                android:background="@drawable/textview_back"
+                android:paddingLeft="8dp"
+                android:text="Free"
+                android:textColor="@android:color/white"
+                android:textSize="20dp"
+                android:drawablePadding="10dp"
+                android:layout_marginTop="-10dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:gravity="center|left"
+                android:layout_gravity="center"
+                android:layout_height="wrap_content" />
+            <TextView
+            android:id="@+id/quan_date"
+            android:layout_width="wrap_content"
+            android:drawableLeft="@drawable/calandericon"
+            android:background="@drawable/textview_back"
+            android:paddingLeft="8dp"
+            android:text="Free"
+            android:textColor="@android:color/white"
+                android:textSize="20dp"
+            android:drawablePadding="10dp"
+            android:gravity="center|left"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+            android:layout_gravity="center"
+            android:layout_height="wrap_content" />
+
+
+            <Button
+                android:id="@+id/quan_checkout"
+                android:layout_width="wrap_content"
+                android:background="@drawable/checkoutbtn"
+
+                android:text="Proceed to checkout"
+                android:textColor="@android:color/white"
+                android:textSize="20dp"
+                android:gravity="center"
+                android:paddingBottom="10dp"
+                android:textAllCaps="false"
+                android:layout_gravity="center"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+    </FrameLayout>
+
+
+
+
+</LinearLayout>
