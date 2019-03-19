@@ -65,7 +65,9 @@ android:layout_gravity="center"
             android:layout_height="wrap_content"
 
             android:layout_marginTop="2dp"
-            android:text="Free"
+            android:text=" 4 hours and 30mins"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
             android:layout_gravity="center|top"
 
             android:textColor="#FFFFFF"

@@ -27,15 +27,15 @@ public class MyTickets extends Fragment {
     RecyclerView  mytix;
     ArrayList<EventModel> data;
     private DatabaseReference mFirebaseRef;
-    private EventAdapter  mAdapterEvent;
+    private MyTixAdapter  mAdapterEvent;
 
     ImageButton search;
     @Override
     public View onCreateView(final LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view =  inflater.inflate(R.layout.fragment_home, container, false);
+        View view =  inflater.inflate(R.layout.fragment_mytickets, container, false);
 
-        mytix = view.findViewById(R.id.nearbyrecy);
+        mytix = view.findViewById(R.id.eventrecy);
         data = new ArrayList<>();
         FirebaseDatabase database = FirebaseDatabase.getInstance();
 
@@ -55,23 +55,13 @@ public class MyTickets extends Fragment {
 
                         System.out.println("nibba " + key);
 
-                        trending.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+
                         mytix.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
-                        mAdapter = new TrendingEventAdapter(data, getContext());
-                        mAdapterEvent = new EventAdapter(data, getContext());
-                        trending.setAdapter(mAdapter);
+
+                        mAdapterEvent = new MyTixAdapter(data, getContext());
+
                         mytix.setAdapter(mAdapterEvent);
-                        mAdapter.setListener(new RecyclerViewAdapter.Listener<EventModel>() {
-                            @Override
-                            public void onClick(@NonNull EventModel eventAdapter) {
-                                Intent intent = new Intent(getContext(), EventClickedActivity.class);
-                                intent.putExtra("event", eventAdapter);
-                                startActivity(intent);
-                            }
 
-
-
-                        });
                         mAdapterEvent.setListener(new RecyclerViewAdapter.Listener<EventModel>() {
                             @Override
                             public void onClick(@NonNull EventModel eventAdapter) {
@@ -114,14 +104,7 @@ public class MyTickets extends Fragment {
 
         });
 
-        search = view.findViewById(R.id.searchbtn);
 
-        search.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                changeFragment(new Search());
-            }
-        });
 
 
 
@@ -132,10 +115,5 @@ public class MyTickets extends Fragment {
         return view;
     }
 
-    public boolean changeFragment(Fragment target){
-        FragmentTransaction ft = getFragmentManager().beginTransaction();
-        ft.replace(R.id.container, target);
-        ft.commit();
-        return true;
-    }
+
 }
