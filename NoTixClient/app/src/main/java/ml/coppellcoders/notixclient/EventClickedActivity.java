@@ -11,8 +11,10 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Base64;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -118,10 +120,15 @@ public class EventClickedActivity extends AppCompatActivity {
         checkout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(), CheckoutActivity.class);
-                intent.putExtra("event", event);
-                intent.putExtra("num", quan);
-                startActivity(intent);
+                if(!price.getText().toString().equals("Select quantity")){
+                    Intent intent = new Intent(getApplicationContext(), CheckoutActivity.class);
+                    intent.putExtra("event", event);
+                    intent.putExtra("num", quan);
+                    startActivity(intent);
+                }else{
+                    Snackbar.make(findViewById(R.id.clickedcont), "Select quantity", Snackbar.LENGTH_SHORT).show();
+                }
+
             }
         });
 
@@ -147,8 +154,14 @@ public class EventClickedActivity extends AppCompatActivity {
                 price.setText(String.format("$%.2f",s*event.getPrice()));
                 else
                     price.setText("Free");
-                Snackbar.make(findViewById(R.id.clickedcont), "Selected " + s, Snackbar.LENGTH_SHORT).show();
 
+                Snackbar snack = Snackbar.make(findViewById(R.id.clickedcont), "Selected " + s, Snackbar.LENGTH_SHORT);
+                View view = snack.getView();
+                FrameLayout.LayoutParams params =(FrameLayout.LayoutParams)view.getLayoutParams();
+                params.gravity = Gravity.TOP;
+                params.topMargin = 60;
+                view.setLayoutParams(params);
+                snack.show();
 
             }
         });

@@ -15,7 +15,7 @@
 
         <ImageView
             android:id="@+id/event_img"
-            android:layout_width="320dp"
+            android:layout_width="323dp"
             android:layout_height="wrap_content"
             android:background="@drawable/sample_img"
 android:layout_gravity="center"

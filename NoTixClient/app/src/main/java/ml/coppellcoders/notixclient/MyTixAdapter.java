@@ -18,13 +18,13 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-public class MyTixAdapter extends RecyclerViewAdapter<EventModel, MyTixAdapter.ItemItemViewHolder>{
+public class MyTixAdapter extends RecyclerViewAdapter<BuyInfoModel, MyTixAdapter.ItemItemViewHolder>{
 
 
     private Context context;
-    List<EventModel> events;
+    List<BuyInfoModel> events;
 
-    public MyTixAdapter(List<EventModel> events, Context context) {
+    public MyTixAdapter(List<BuyInfoModel> events, Context context) {
         super(events);
         this.events = events;
         this.context = context;
@@ -58,7 +58,7 @@ public class MyTixAdapter extends RecyclerViewAdapter<EventModel, MyTixAdapter.I
         @Override
         public void bind(int position) {
             super.bind(position);
-            final EventModel events = get(position);
+            final BuyInfoModel events = get(position);
 
             if(events.getImg().contains("http"))
                 Picasso.with(context).load(events.getImg()).fit().centerCrop().into(img);
@@ -69,7 +69,7 @@ public class MyTixAdapter extends RecyclerViewAdapter<EventModel, MyTixAdapter.I
 
             venue.setText(events.getVenue());
             Calendar calendar = Calendar.getInstance();
-            calendar.setTimeInMillis(events.getDate());
+            calendar.setTimeInMillis(events.getTime());
 
 
             int mMonth = calendar.get(Calendar.MONTH);
@@ -87,7 +87,7 @@ public class MyTixAdapter extends RecyclerViewAdapter<EventModel, MyTixAdapter.I
             monthNames[9] = "Oct";
             monthNames[10] = "Nov";
             monthNames[11] = "Dec";
-            final long millis = events.getDate() - System.currentTimeMillis();
+            final long millis = events.getTime() - System.currentTimeMillis();
             int hours = (int) (TimeUnit.MILLISECONDS.toHours(millis) - TimeUnit.HOURS.toHours(TimeUnit.MILLISECONDS.toHours(millis)));
             int mins = (int) (TimeUnit.MILLISECONDS.toMinutes(millis) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millis)));
 

@@ -26,6 +26,8 @@
             android:name=".MainActivity"
             android:label="@string/app_name" />
         <activity
+            android:name=".MyTixClickedActivity" />
+        <activity
             android:name=".ShowSplash"
             android:label="@string/app_name"
             android:screenOrientation="portrait"

@@ -25,7 +25,7 @@ import java.util.ArrayList;
 public class MyTickets extends Fragment {
 
     RecyclerView  mytix;
-    ArrayList<EventModel> data;
+    ArrayList<BuyInfoModel> data;
     private DatabaseReference mFirebaseRef;
     private MyTixAdapter  mAdapterEvent;
 
@@ -48,9 +48,8 @@ public class MyTickets extends Fragment {
                     try {
 
                         System.out.println(dataSnapshot.toString());
-                        EventModel model = dataSnapshot.getValue(EventModel.class);
+                        BuyInfoModel model = dataSnapshot.getValue(BuyInfoModel.class);
                         final String key = dataSnapshot.getKey();
-                        model.setKey(key);
                         data.add(model);
 
                         System.out.println("nibba " + key);
@@ -62,10 +61,10 @@ public class MyTickets extends Fragment {
 
                         mytix.setAdapter(mAdapterEvent);
 
-                        mAdapterEvent.setListener(new RecyclerViewAdapter.Listener<EventModel>() {
+                        mAdapterEvent.setListener(new RecyclerViewAdapter.Listener<BuyInfoModel>() {
                             @Override
-                            public void onClick(@NonNull EventModel eventAdapter) {
-                                Intent intent = new Intent(getContext(), EventClickedActivity.class);
+                            public void onClick(@NonNull BuyInfoModel eventAdapter) {
+                                Intent intent = new Intent(getContext(), MyTixClickedActivity.class);
                                 intent.putExtra("event", eventAdapter);
 
                                 startActivity(intent);

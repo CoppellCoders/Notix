@@ -107,26 +107,32 @@ public class CheckoutActivity extends AppCompatActivity {
         buy.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                pushid[0] = mFirebaseRef.push().getKey();
+                if(!face.getText().toString().equals("Select a Face")){
+                    pushid[0] = mFirebaseRef.push().getKey();
 
-                mFirebaseRef.push().setValue(new BuyInfoModel(event.getDate(),event.getImg(),event.getName(),event.getVenue(),event.getCategory(),event.getAddress(),imgurl,name,event.getPrice(),event.getQuantity(),quant)).addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        mFirebaseRefBus.push().setValue(new BuyInfoModel(event.getDate(),event.getImg(),event.getName(),event.getVenue(),event.getCategory(),event.getAddress(),imgurl,name,event.getPrice(),event.getQuantity(),quant)).addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void aVoid) {
+                    mFirebaseRef.push().setValue(new BuyInfoModel(event.getDate(),event.getImg(),event.getName(),event.getVenue(),event.getCategory(),event.getAddress(),imgurl,name,event.getPrice(),event.getQuantity(),quant)).addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            mFirebaseRefBus.push().setValue(new BuyInfoModel(event.getDate(),event.getImg(),event.getName(),event.getVenue(),event.getCategory(),event.getAddress(),imgurl,name,event.getPrice(),event.getQuantity(),quant)).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
 
-                                Intent intent = new Intent(getApplicationContext(), SuccessActivity.class);
-                                intent.putExtra("num", pushid[0]);
-                                startActivity(intent);
-                                finish();
+                                    Intent intent = new Intent(getApplicationContext(), SuccessActivity.class);
+                                    intent.putExtra("num", pushid[0]);
+                                    startActivity(intent);
+                                    finish();
 
-                            }
-                        });
+                                }
+                            });
 
 
-                    }
-                });
+                        }
+                    });
+
+                }else{
+                    Snackbar.make(findViewById(R.id.checkcont), "Please select a face", Snackbar.LENGTH_SHORT).show();
+
+                }
 
             }
         });

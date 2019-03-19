@@ -1,6 +1,8 @@
 package ml.coppellcoders.notixclient;
 
-public class BuyInfoModel {
+import java.io.Serializable;
+
+public class BuyInfoModel implements Serializable {
     Long time;
     String img,name, venue, category, address, faceimg, guestname;
     double price, quantity;
@@ -18,6 +20,10 @@ public class BuyInfoModel {
         this.price = price;
         this.quantity = quantity;
         this.quant = quant;
+    }
+
+    public BuyInfoModel(){
+
     }
 
     public Long getTime() {
