@@ -167,6 +167,7 @@ public class ScanActivity extends Activity {
                                                             //QR Code qrCode {Bit Map)
                                                             Log.i("Info", String.format("Event Name: %s%n Person Name: %s%n Time: %d%n Venue: %s%n Ticket ID: %s%n"
                                                             ,eventName, name, time, venue, ticketID));
+                                                            Log.e("QR Code Data: " , children.getKey()+"["+ faces.getKey());
                                                         } catch (WriterException e) {
                                                             e.printStackTrace();
                                                         }

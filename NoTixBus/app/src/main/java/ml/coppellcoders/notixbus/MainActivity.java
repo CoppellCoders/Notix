@@ -29,10 +29,9 @@ public class MainActivity extends AppCompatActivity {
                     changeFragment(new EventsFragment());
                     return true;
                 case R.id.navigation_dashboard:
-                    mTextMessage.setText(R.string.title_dashboard);
+                    changeFragment(new ScanFragment());
                     return true;
                 case R.id.navigation_notifications:
-                    mTextMessage.setText(R.string.title_notifications);
                     return true;
             }
             return false;
