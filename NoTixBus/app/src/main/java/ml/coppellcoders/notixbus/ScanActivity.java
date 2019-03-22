@@ -49,6 +49,8 @@ import com.microsoft.projectoxford.face.contract.VerifyResult;
 import com.otaliastudios.cameraview.CameraListener;
 import com.otaliastudios.cameraview.CameraView;
 
+import com.otaliastudios.cameraview.Facing;
+import com.otaliastudios.cameraview.Flash;
 import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayInputStream;
@@ -70,7 +72,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-public class ScanActivity extends Activity implements LifecycleObserver {
+public class ScanActivity extends Activity {
     ImageView scanImage;
     TextView scanEventName;
     TextView scanTime;
@@ -78,13 +80,14 @@ public class ScanActivity extends Activity implements LifecycleObserver {
     Button takePicture;
     String currentPhotoPath = "";
     String eventName = "";
-    CameraView camera;
+    private CameraView mCameraView;
+
     private final String apiEndpoint = "https://westcentralus.api.cognitive.microsoft.com/face/v1.0";
     private final String subscriptionKey = "8cbcd7079f334206968fbba199aaff0a";
-    FaceServiceClient faceServiceClient = new FaceServiceRestClient(apiEndpoint, subscriptionKey);;
+    FaceServiceClient faceServiceClient = new FaceServiceRestClient(apiEndpoint, subscriptionKey);
+    ;
     static final int REQUEST_IMAGE_CAPTURE = 1;
     long time;
-
 
 
     @Override
@@ -100,40 +103,44 @@ public class ScanActivity extends Activity implements LifecycleObserver {
         eventName = getIntent().getExtras().get("name").toString();
         time = getIntent().getLongExtra("time", 0);
         scanEventName.setText(eventName);
-        camera = findViewById(R.id.cameraView);;
+        mCameraView = findViewById(R.id.camera);
+
+
         takePicture.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 System.out.println("Button Pressed");
-                    camera.capturePicture();
+                mCameraView.capturePicture();
             }
         });
-        camera.addCameraListener(new CameraListener() {
+        mCameraView.addCameraListener(new CameraListener() {
             @Override
             public void onPictureTaken(byte[] jpeg) {
                 Bitmap bitmap = BitmapFactory.decodeByteArray(jpeg, 0, jpeg.length);
+                Bitmap converetdImage = getResizedBitmap(bitmap, 250);
+
                 FirebaseDatabase database = FirebaseDatabase.getInstance();
                 DatabaseReference myRef = database.getReference("Events");
-                final UUID firstUserId = detectAndFrame(bitmap, true);
+                final UUID firstUserId = detectAndFrame(converetdImage, true);
                 myRef.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         boolean foundTicket = false;
-                        for(DataSnapshot children : dataSnapshot.getChildren()){
+                        for (DataSnapshot children : dataSnapshot.getChildren()) {
 
-                            if(children.child("name").getValue().toString().equals(eventName)){
-                                for(DataSnapshot faces : children.child("tickets").getChildren()){
+                            if (children.child("name").getValue().toString().equals(eventName)) {
+                                for (DataSnapshot faces : children.child("tickets").getChildren()) {
                                     String name = faces.child("guestname").getValue().toString();
                                     String image = faces.child("faceimg").getValue().toString();
                                     String quant = faces.child("quant").getValue().toString();
                                     Bitmap temp = decodeBase64(image);
                                     UUID curUserId = detectAndFrame(temp, false);
-                                    Log.i("User ID's", firstUserId + " "+curUserId);
+                                    Log.i("User ID's", firstUserId + " " + curUserId);
                                     try {
                                         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
                                         StrictMode.setThreadPolicy(policy);
                                         double b = faceServiceClient.verify(firstUserId, curUserId).confidence;
-                                        if(b>.5){
+                                        if (b > .5) {
                                             System.out.println("Found ticket exiting");
                                             //Toast.makeText(ScanActivity.this, "Match Found " + b, Toast.LENGTH_LONG).show();
                                             new AlertDialog.Builder(ScanActivity.this)
@@ -144,7 +151,7 @@ public class ScanActivity extends Activity implements LifecycleObserver {
                                                         public void onClick(DialogInterface dialogInterface, int i) {
                                                             QRCodeWriter writer = new QRCodeWriter();
                                                             try {
-                                                                BitMatrix qrCode = writer.encode(children.getKey()+"["+ faces.getKey(), BarcodeFormat.QR_CODE, 512, 512);
+                                                                BitMatrix qrCode = writer.encode(children.getKey() + "[" + faces.getKey(), BarcodeFormat.QR_CODE, 512, 512);
                                                                 int width = qrCode.getWidth();
                                                                 int height = qrCode.getHeight();
                                                                 Bitmap bmp = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
@@ -162,8 +169,8 @@ public class ScanActivity extends Activity implements LifecycleObserver {
                                                                 String ticketID = faces.getKey();
                                                                 //QR Code qrCode {Bit Map)
                                                                 Log.i("Info", String.format("Event Name: %s%n Person Name: %s%n Time: %d%n Venue: %s%n Ticket ID: %s%n"
-                                                                        ,eventName, name, time, venue, ticketID));
-                                                                Log.e("QR Code Data: " , children.getKey()+"["+ faces.getKey());
+                                                                        , eventName, name, time, venue, ticketID));
+                                                                Log.e("QR Code Data: ", children.getKey() + "[" + faces.getKey());
                                                             } catch (WriterException e) {
                                                                 e.printStackTrace();
                                                             }
@@ -175,14 +182,14 @@ public class ScanActivity extends Activity implements LifecycleObserver {
                                             foundTicket = true;
                                             break;
                                         }
-                                    }catch (Exception e){
+                                    } catch (Exception e) {
                                         e.printStackTrace();
                                     }
                                 }
                             }
 
                         }
-                        if(!foundTicket){
+                        if (!foundTicket) {
                             new AlertDialog.Builder(ScanActivity.this)
                                     .setTitle("Error")
                                     .setMessage("No tickets found for user")
@@ -199,22 +206,23 @@ public class ScanActivity extends Activity implements LifecycleObserver {
             }
         });
         Log.i("imgSrc", imageSrc);
-        if(imageSrc.startsWith("http")) {
+        if (imageSrc.startsWith("http")) {
             Picasso.with(this).load(imageSrc).fit().centerCrop().into(scanImage);
-        }else{
+        } else {
             scanImage.setImageBitmap(decodeBase64(imageSrc));
         }
         long timeLeft = time - System.currentTimeMillis();
-        int minutes = (int) ((timeLeft / (1000*60)) % 60);
-        int hours   = (int) ((timeLeft / (1000*60*60)));
-        scanTime.setText(hours+" hours " + minutes +" minutes");
+        int minutes = (int) ((timeLeft / (1000 * 60)) % 60);
+        int hours = (int) ((timeLeft / (1000 * 60 * 60)));
+        scanTime.setText(hours + " hours " + minutes + " minutes");
 
     }
-    public static Bitmap decodeBase64(String input)
-    {
+
+    public static Bitmap decodeBase64(String input) {
         byte[] decodedBytes = Base64.decode(input, 0);
         return BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
     }
+
     private File createImageFile() throws IOException {
         // Create an image file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
@@ -230,6 +238,7 @@ public class ScanActivity extends Activity implements LifecycleObserver {
         currentPhotoPath = image.getAbsolutePath();
         return image;
     }
+
     private void dispatchTakePictureIntent() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         // Ensure that there's a camera activity to handle the intent
@@ -259,10 +268,10 @@ public class ScanActivity extends Activity implements LifecycleObserver {
         ByteArrayInputStream inputStream =
                 new ByteArrayInputStream(outputStream.toByteArray());
         final ArrayList<String> id = new ArrayList<>();
-        AsyncTask<InputStream, String, Face[]> detectTask =
-                new AsyncTask<InputStream, String, Face[]>() {
+        AsyncTask<InputStream, String, Face[]> detectTask = new AsyncTask<InputStream, String, Face[]>() {
                     String exceptionMessage = "";
                     ProgressDialog detectionProgressDialog = new ProgressDialog(ScanActivity.this);
+
                     @Override
                     protected Face[] doInBackground(InputStream... params) {
                         try {
@@ -277,7 +286,7 @@ public class ScanActivity extends Activity implements LifecycleObserver {
                                     FaceServiceClient.FaceAttributeType.Gender }
                                 */
                             );
-                            if (result == null){
+                            if (result == null) {
                                 publishProgress(
                                         "Detection Finished. Nothing detected");
                                 return null;
@@ -298,21 +307,23 @@ public class ScanActivity extends Activity implements LifecycleObserver {
                         //TODO: show progress dialog
                         detectionProgressDialog.show();
                     }
+
                     @Override
                     protected void onProgressUpdate(String... progress) {
                         //TODO: update progress
                         detectionProgressDialog.setMessage(progress[0]);
                     }
+
                     @Override
                     protected void onPostExecute(Face[] result) {
                         //TODO: update face frames
                         detectionProgressDialog.dismiss();
 
-                        if(!exceptionMessage.equals("")){
+                        if (!exceptionMessage.equals("")) {
                             showError(exceptionMessage);
                         }
                         if (result == null) return;
-                        if(frame) {
+                        if (frame) {
                             scanPicture.setImageBitmap(
                                     drawFaceRectanglesOnBitmap(imageBitmap, result));
                             imageBitmap.recycle();
@@ -321,7 +332,7 @@ public class ScanActivity extends Activity implements LifecycleObserver {
                 };
         try {
             return detectTask.execute(inputStream).get()[0].faceId;
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return new UUID(1, 1);
@@ -333,9 +344,11 @@ public class ScanActivity extends Activity implements LifecycleObserver {
                 .setMessage(message)
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                    }})
+                    }
+                })
                 .create().show();
     }
+
     private static Bitmap drawFaceRectanglesOnBitmap(
             Bitmap originalBitmap, Face[] faces) {
         Bitmap bitmap = originalBitmap.copy(Bitmap.Config.ARGB_8888, true);
@@ -359,8 +372,48 @@ public class ScanActivity extends Activity implements LifecycleObserver {
         }
         return bitmap;
     }
-    public String getFaceId(Face[] faces){
-        return faces[0].faceId+"";
+
+    public String getFaceId(Face[] faces) {
+        return faces[0].faceId + "";
+    }
+
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mCameraView.start();
+
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mCameraView.stop();
+        mCameraView.clearFrameProcessors();
+
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mCameraView.destroy();
+        mCameraView.clearFrameProcessors();
+    }
+
+    public Bitmap getResizedBitmap(Bitmap image, int maxSize) {
+        int width = image.getWidth();
+        int height = image.getHeight();
+
+        float bitmapRatio = (float)width / (float) height;
+        if (bitmapRatio > 1) {
+            width = maxSize;
+            height = (int) (width / bitmapRatio);
+        } else {
+            height = maxSize;
+            width = (int) (height * bitmapRatio);
+        }
+        return Bitmap.createScaledBitmap(image, width, height, true);
     }
 
 }
+
