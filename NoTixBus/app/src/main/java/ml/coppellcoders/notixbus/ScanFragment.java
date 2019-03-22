@@ -28,7 +28,7 @@ public class ScanFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = super.onCreateView(inflater, container, savedInstanceState);
         IntentIntegrator ii = IntentIntegrator.forSupportFragment(ScanFragment.this);
-        ii.setOrientationLocked(false);
+        ii.setOrientationLocked(true);
         ii.setPrompt("Scan Ticket");
         ii.initiateScan();
         return view;
