@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.arch.lifecycle.LifecycleObserver;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -44,6 +45,10 @@ import com.microsoft.projectoxford.face.FaceServiceRestClient;
 import com.microsoft.projectoxford.face.contract.Face;
 import com.microsoft.projectoxford.face.contract.FaceRectangle;
 import com.microsoft.projectoxford.face.contract.VerifyResult;
+
+import com.otaliastudios.cameraview.CameraListener;
+import com.otaliastudios.cameraview.CameraView;
+
 import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayInputStream;
@@ -65,7 +70,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-public class ScanActivity extends Activity {
+public class ScanActivity extends Activity implements LifecycleObserver {
     ImageView scanImage;
     TextView scanEventName;
     TextView scanTime;
@@ -73,11 +78,15 @@ public class ScanActivity extends Activity {
     Button takePicture;
     String currentPhotoPath = "";
     String eventName = "";
+    CameraView camera;
     private final String apiEndpoint = "https://westcentralus.api.cognitive.microsoft.com/face/v1.0";
     private final String subscriptionKey = "8cbcd7079f334206968fbba199aaff0a";
     FaceServiceClient faceServiceClient = new FaceServiceRestClient(apiEndpoint, subscriptionKey);;
     static final int REQUEST_IMAGE_CAPTURE = 1;
     long time;
+
+
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -91,7 +100,104 @@ public class ScanActivity extends Activity {
         eventName = getIntent().getExtras().get("name").toString();
         time = getIntent().getLongExtra("time", 0);
         scanEventName.setText(eventName);
+        camera = findViewById(R.id.cameraView);;
+        takePicture.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                System.out.println("Button Pressed");
+                    camera.capturePicture();
+            }
+        });
+        camera.addCameraListener(new CameraListener() {
+            @Override
+            public void onPictureTaken(byte[] jpeg) {
+                Bitmap bitmap = BitmapFactory.decodeByteArray(jpeg, 0, jpeg.length);
+                FirebaseDatabase database = FirebaseDatabase.getInstance();
+                DatabaseReference myRef = database.getReference("Events");
+                final UUID firstUserId = detectAndFrame(bitmap, true);
+                myRef.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        boolean foundTicket = false;
+                        for(DataSnapshot children : dataSnapshot.getChildren()){
 
+                            if(children.child("name").getValue().toString().equals(eventName)){
+                                for(DataSnapshot faces : children.child("tickets").getChildren()){
+                                    String name = faces.child("guestname").getValue().toString();
+                                    String image = faces.child("faceimg").getValue().toString();
+                                    String quant = faces.child("quant").getValue().toString();
+                                    Bitmap temp = decodeBase64(image);
+                                    UUID curUserId = detectAndFrame(temp, false);
+                                    Log.i("User ID's", firstUserId + " "+curUserId);
+                                    try {
+                                        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+                                        StrictMode.setThreadPolicy(policy);
+                                        double b = faceServiceClient.verify(firstUserId, curUserId).confidence;
+                                        if(b>.5){
+                                            System.out.println("Found ticket exiting");
+                                            //Toast.makeText(ScanActivity.this, "Match Found " + b, Toast.LENGTH_LONG).show();
+                                            new AlertDialog.Builder(ScanActivity.this)
+                                                    .setTitle("Proceed to Printout")
+                                                    .setMessage(String.format("Found %s ticket(s) for %s", quant, name))
+                                                    .setPositiveButton("Proceed", new DialogInterface.OnClickListener() {
+                                                        @Override
+                                                        public void onClick(DialogInterface dialogInterface, int i) {
+                                                            QRCodeWriter writer = new QRCodeWriter();
+                                                            try {
+                                                                BitMatrix qrCode = writer.encode(children.getKey()+"["+ faces.getKey(), BarcodeFormat.QR_CODE, 512, 512);
+                                                                int width = qrCode.getWidth();
+                                                                int height = qrCode.getHeight();
+                                                                Bitmap bmp = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
+                                                                for (int x = 0; x < width; x++) {
+                                                                    for (int y = 0; y < height; y++) {
+                                                                        bmp.setPixel(x, y, qrCode.get(x, y) ? Color.BLACK : Color.WHITE);
+                                                                    }
+                                                                }
+                                                                //Name of Event: eventName
+                                                                //Name of Person: name
+                                                                //Time: time (long)
+                                                                //Venue
+                                                                String venue = children.child("venue").getValue().toString();
+                                                                //Ticket ID:
+                                                                String ticketID = faces.getKey();
+                                                                //QR Code qrCode {Bit Map)
+                                                                Log.i("Info", String.format("Event Name: %s%n Person Name: %s%n Time: %d%n Venue: %s%n Ticket ID: %s%n"
+                                                                        ,eventName, name, time, venue, ticketID));
+                                                                Log.e("QR Code Data: " , children.getKey()+"["+ faces.getKey());
+                                                            } catch (WriterException e) {
+                                                                e.printStackTrace();
+                                                            }
+
+                                                        }
+                                                    })
+                                                    .setNegativeButton("Cancel", null)
+                                                    .show();
+                                            foundTicket = true;
+                                            break;
+                                        }
+                                    }catch (Exception e){
+                                        e.printStackTrace();
+                                    }
+                                }
+                            }
+
+                        }
+                        if(!foundTicket){
+                            new AlertDialog.Builder(ScanActivity.this)
+                                    .setTitle("Error")
+                                    .setMessage("No tickets found for user")
+                                    .setPositiveButton(android.R.string.no, null)
+                                    .show();
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+            }
+        });
         Log.i("imgSrc", imageSrc);
         if(imageSrc.startsWith("http")) {
             Picasso.with(this).load(imageSrc).fit().centerCrop().into(scanImage);
@@ -102,107 +208,7 @@ public class ScanActivity extends Activity {
         int minutes = (int) ((timeLeft / (1000*60)) % 60);
         int hours   = (int) ((timeLeft / (1000*60*60)));
         scanTime.setText(hours+" hours " + minutes +" minutes");
-        takePicture.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                dispatchTakePictureIntent();
-            }
-        });
-    }
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            FirebaseDatabase database = FirebaseDatabase.getInstance();
-            DatabaseReference myRef = database.getReference("Events");
-            Bitmap temp = BitmapFactory.decodeFile(currentPhotoPath);
-            Matrix matrix = new Matrix();
-            matrix.postRotate(90);
-            temp = Bitmap.createBitmap(temp,0,0,temp.getWidth(),temp.getHeight(),matrix,true);
-            final UUID firstUserId = detectAndFrame(temp, true);
-            myRef.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    boolean foundTicket = false;
-                    for(DataSnapshot children : dataSnapshot.getChildren()){
 
-                        if(children.child("name").getValue().toString().equals(eventName)){
-                            for(DataSnapshot faces : children.child("tickets").getChildren()){
-                                String name = faces.child("guestname").getValue().toString();
-                                String image = faces.child("faceimg").getValue().toString();
-                                String quant = faces.child("quant").getValue().toString();
-                                Bitmap temp = decodeBase64(image);
-                                UUID curUserId = detectAndFrame(temp, false);
-                                Log.i("User ID's", firstUserId + " "+curUserId);
-                                try {
-                                    StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-                                    StrictMode.setThreadPolicy(policy);
-                                    double b = faceServiceClient.verify(firstUserId, curUserId).confidence;
-                                    if(b>.5){
-                                        System.out.println("Found ticket exiting");
-                                        //Toast.makeText(ScanActivity.this, "Match Found " + b, Toast.LENGTH_LONG).show();
-                                        new AlertDialog.Builder(ScanActivity.this)
-                                                .setTitle("Proceed to Printout")
-                                                .setMessage(String.format("Found %s ticket(s) for %s", quant, name))
-                                                .setPositiveButton("Proceed", new DialogInterface.OnClickListener() {
-                                                    @Override
-                                                    public void onClick(DialogInterface dialogInterface, int i) {
-                                                        QRCodeWriter writer = new QRCodeWriter();
-                                                        try {
-                                                            BitMatrix qrCode = writer.encode(children.getKey()+"["+ faces.getKey(), BarcodeFormat.QR_CODE, 512, 512);
-                                                            int width = qrCode.getWidth();
-                                                            int height = qrCode.getHeight();
-                                                            Bitmap bmp = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
-                                                            for (int x = 0; x < width; x++) {
-                                                                for (int y = 0; y < height; y++) {
-                                                                    bmp.setPixel(x, y, qrCode.get(x, y) ? Color.BLACK : Color.WHITE);
-                                                                }
-                                                            }
-                                                            //Name of Event: eventName
-                                                            //Name of Person: name
-                                                            //Time: time (long)
-                                                            //Venue
-                                                            String venue = children.child("venue").getValue().toString();
-                                                            //Ticket ID:
-                                                            String ticketID = faces.getKey();
-                                                            //QR Code qrCode {Bit Map)
-                                                            Log.i("Info", String.format("Event Name: %s%n Person Name: %s%n Time: %d%n Venue: %s%n Ticket ID: %s%n"
-                                                            ,eventName, name, time, venue, ticketID));
-                                                            Log.e("QR Code Data: " , children.getKey()+"["+ faces.getKey());
-                                                        } catch (WriterException e) {
-                                                            e.printStackTrace();
-                                                        }
-
-                                                    }
-                                                })
-                                                .setNegativeButton("Cancel", null)
-                                                .show();
-                                        foundTicket = true;
-                                        break;
-                                    }
-                                }catch (Exception e){
-                                    e.printStackTrace();
-                                }
-                            }
-                        }
-
-                    }
-                    if(!foundTicket){
-                        new AlertDialog.Builder(ScanActivity.this)
-                                .setTitle("Error")
-                                .setMessage("No tickets found for user")
-                                .setPositiveButton(android.R.string.no, null)
-                                .show();
-                    }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                }
-            });
-            //Picasso.with(this).load(new File(currentPhotoPath)).into(scanPicture);
-
-        }
     }
     public static Bitmap decodeBase64(String input)
     {
