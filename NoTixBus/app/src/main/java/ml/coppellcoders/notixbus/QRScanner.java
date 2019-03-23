@@ -150,4 +150,11 @@ public class QRScanner extends Activity implements QRCodeReaderView.OnQRCodeRead
         super.onPause();
         qrCodeReaderView.stopCamera();
     }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        startActivity(new Intent(getApplicationContext(), MainActivity.class));
+
+    }
 }

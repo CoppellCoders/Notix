@@ -102,7 +102,7 @@ public class PrintAsync extends AsyncTask<Void, Integer, Void> {
             bitmap = overlay(bitmap,bitma,459,1100);
             //img.setImageBitmap(bitmap);
             myPrint.setFiles(bitmap);
-           myPrint.print(pdia);
+            myPrint.print(pdia);
 
         }catch (Exception e){
 
@@ -194,5 +194,3 @@ public class PrintAsync extends AsyncTask<Void, Integer, Void> {
 
 
 }
-
-

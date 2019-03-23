@@ -40,6 +40,7 @@
         android:layout_marginBottom="0dp"
         />
 
+
     <com.otaliastudios.cameraview.CameraView
         android:id="@+id/camera"
         android:keepScreenOn="true"
@@ -53,8 +54,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Scan Atendee"
-            android:paddingTop="20dp"
-            android:layout_marginTop="15dp"
+
+        android:textAllCaps="false"
+            android:textSize="20dp"
             android:textColor="#ffffff"
             android:layout_gravity="center_horizontal"
             android:id="@+id/scan_take_photo"

@@ -22,8 +22,15 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 }
+repositories {
+    flatDir {
+        dirs 'libs'
+    }
+}
 
 dependencies {
+    implementation(name: 'BrotherPrintLibrary', ext: 'aar')
+
     implementation 'com.android.support:cardview-v7:28.0.0'
     implementation 'com.squareup.picasso:picasso:2.5.2'
     implementation 'com.squareup.okhttp3:okhttp:3.14.0'
@@ -40,6 +47,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-database:16.0.1'
     implementation 'com.otaliastudios:cameraview:1.5.1'
     implementation 'com.dlazaro66.qrcodereaderview:qrcodereaderview:2.0.3'
+    implementation 'com.android.support:exifinterface:28.0.0'
 
 
 

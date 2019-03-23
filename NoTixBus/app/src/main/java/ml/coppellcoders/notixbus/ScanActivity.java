@@ -1,11 +1,9 @@
 package ml.coppellcoders.notixbus;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.ProgressDialog;
-import android.arch.lifecycle.LifecycleObserver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -15,7 +13,6 @@ import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.drawable.ColorDrawable;
-import android.media.Image;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -33,28 +30,21 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.zxing.BarcodeFormat;
-import com.google.zxing.WriterException;
-import com.google.zxing.common.BitMatrix;
-import com.google.zxing.qrcode.QRCodeWriter;
 import com.microsoft.projectoxford.face.FaceServiceClient;
 import com.microsoft.projectoxford.face.FaceServiceRestClient;
 import com.microsoft.projectoxford.face.contract.Face;
 import com.microsoft.projectoxford.face.contract.FaceRectangle;
-import com.microsoft.projectoxford.face.contract.VerifyResult;
 
 import com.otaliastudios.cameraview.CameraListener;
+import com.otaliastudios.cameraview.CameraUtils;
 import com.otaliastudios.cameraview.CameraView;
 
-import com.otaliastudios.cameraview.Facing;
-import com.otaliastudios.cameraview.Flash;
 import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayInputStream;
@@ -62,19 +52,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.UUID;
-
-import okhttp3.FormBody;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
 
 public class ScanActivity extends Activity {
     ImageView scanImage;
@@ -85,7 +67,8 @@ public class ScanActivity extends Activity {
     String currentPhotoPath = "";
     String eventName = "";
     private CameraView mCameraView;
-
+    Context mContext;
+    ProgressDialog detectionProgressDialog;
     private final String apiEndpoint = "https://westcentralus.api.cognitive.microsoft.com/face/v1.0";
     private final String subscriptionKey = "8cbcd7079f334206968fbba199aaff0a";
     FaceServiceClient faceServiceClient = new FaceServiceRestClient(apiEndpoint, subscriptionKey);
@@ -124,67 +107,113 @@ public class ScanActivity extends Activity {
         int minutes = (int) ((timeLeft / (1000 * 60)) % 60);
         int hours = (int) ((timeLeft / (1000 * 60 * 60)));
         scanTime.setText(hours + " hours " + minutes + " minutes");
-
+        mContext = ScanActivity.this;
         takePicture.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 System.out.println("Button Pressed");
+                detectionProgressDialog = new ProgressDialog(mContext);
+                //getResources().getString(R.string.shop_1)
+                detectionProgressDialog.setMessage("Please wait while detecting face");
+                detectionProgressDialog.setTitle("Verifying face");
+                detectionProgressDialog.setCanceledOnTouchOutside(false);
+                detectionProgressDialog.show();
                 mCameraView.capturePicture();
             }
         });
         mCameraView.addCameraListener(new CameraListener() {
             @Override
             public void onPictureTaken(byte[] jpeg) {
-                showImageView();
-                Bitmap bitmap = BitmapFactory.decodeByteArray(jpeg, 0, jpeg.length);
-                Matrix matrix = new Matrix();
-                matrix.postRotate(90);
-                bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
-                Bitmap converetdImage = getResizedBitmap(bitmap, 250);
-
-                FirebaseDatabase database = FirebaseDatabase.getInstance();
-                DatabaseReference myRef = database.getReference("Events");
-                final UUID firstUserId = detectAndFrame(converetdImage, true);
-                myRef.addValueEventListener(new ValueEventListener() {
+                CameraUtils.decodeBitmap(jpeg, new CameraUtils.BitmapCallback() {
                     @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        boolean foundTicket = false;
-                        for (DataSnapshot children : dataSnapshot.getChildren()) {
+                    public void onBitmapReady(Bitmap bitmap) {
 
-                            if (children.child("name").getValue().toString().equals(eventName)) {
-                                for (DataSnapshot faces : children.child("tickets").getChildren()) {
-                                    String name = faces.child("guestname").getValue().toString();
-                                    String image = faces.child("faceimg").getValue().toString();
-                                    String quant = faces.child("quant").getValue().toString();
-                                    Bitmap temp = decodeBase64(image);
-                                    UUID curUserId = detectAndFrame(temp, false);
-                                    Log.i("User ID's", firstUserId + " " + curUserId);
-                                    try {
-                                        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-                                        StrictMode.setThreadPolicy(policy);
-                                        double b = faceServiceClient.verify(firstUserId, curUserId).confidence;
-                                        if (b > .5) {
-                                            System.out.println("Found ticket exiting");
-                                            //Toast.makeText(ScanActivity.this, "Match Found " + b, Toast.LENGTH_LONG).show();
-                                            View alertView = getLayoutInflater().inflate(R.layout.print_id_dialog, null);
-                                            TextView info = alertView.findViewById(R.id.alert_info);
-                                            Button print = alertView.findViewById(R.id.alert_print);
-                                            ImageView cancel = alertView.findViewById(R.id.alert_cancel);
-                                            info.setText(String.format("Found %s ticket(s) for %s", quant, name));
+                        Matrix matrix = new Matrix();
+                        // matrix.postRotate(90);
+                        bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+                        Bitmap converetdImage = getResizedBitmap(bitmap, 250);
+                        //Here comes your bitmap
+                        showImageView();
 
-                                            AlertDialog dialog = new AlertDialog.Builder(ScanActivity.this)
-                                                    .setView(alertView)
-                                                    .create();
-                                            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                                            cancel.setOnClickListener(new View.OnClickListener() {
-                                                @Override
-                                                public void onClick(View view) {
-                                                    dialog.dismiss();
-                                                }
+                        scanPicture.setImageBitmap(converetdImage);
 
-                                            });
-                                            Log.e("QR Code Data: ", children.getKey() + "[" + faces.getKey());
-                                            dialog.show();
+                        FirebaseDatabase database = FirebaseDatabase.getInstance();
+                        DatabaseReference myRef = database.getReference("Events");
+                        final UUID firstUserId = detectAndFrame(converetdImage, true);
+                        myRef.addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                boolean foundTicket = false;
+                                for (DataSnapshot children : dataSnapshot.getChildren()) {
+
+                                    if (children.child("name").getValue().toString().equals(eventName)) {
+                                        for (DataSnapshot faces : children.child("tickets").getChildren()) {
+                                            String name = faces.child("guestname").getValue().toString();
+                                            String image = faces.child("faceimg").getValue().toString();
+                                            String quant = faces.child("quant").getValue().toString();
+                                            String event = faces.child("name").getValue().toString();
+                                            String venue = faces.child("venue").getValue().toString();
+                                            long date = Long.parseLong(faces.child("time").getValue().toString());
+
+                                            Calendar calendar = Calendar.getInstance();
+                                            calendar.setTimeInMillis(date);
+                                            int mMonth = calendar.get(Calendar.MONTH);
+                                            int mDay = calendar.get(Calendar.DAY_OF_MONTH);
+                                            String[] monthNames = new String[12];
+                                            monthNames[0] = "Jan";
+                                            monthNames[1] = "Feb";
+                                            monthNames[2] = "Mar";
+                                            monthNames[3] = "Apr";
+                                            monthNames[4] = "May";
+                                            monthNames[5] = "Jun";
+                                            monthNames[6] = "Jul";
+                                            monthNames[7] = "Aug";
+                                            monthNames[8] = "Sep";
+                                            monthNames[9] = "Oct";
+                                            monthNames[10] = "Nov";
+                                            monthNames[11] = "Dec";
+
+                                            String time =  monthNames[mMonth] + " " + mDay;
+
+                                            Bitmap temp = decodeBase64(image);
+                                            UUID curUserId = detectAndFrame(temp, false);
+                                            Log.i("User ID's", firstUserId + " " + curUserId);
+                                            try {
+                                                StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+                                                StrictMode.setThreadPolicy(policy);
+                                                double b = faceServiceClient.verify(firstUserId, curUserId).confidence;
+                                                if (b > .5) {
+                                                    System.out.println("Found ticket exiting");
+                                                    //Toast.makeText(ScanActivity.this, "Match Found " + b, Toast.LENGTH_LONG).show();
+                                                    View alertView = getLayoutInflater().inflate(R.layout.print_id_dialog, null);
+                                                    TextView info = alertView.findViewById(R.id.alert_info);
+                                                    Button print = alertView.findViewById(R.id.alert_print);
+                                                    ImageView cancel = alertView.findViewById(R.id.alert_cancel);
+                                                    info.setText(String.format("Found %s ticket(s) for %s", quant, name));
+
+                                                    AlertDialog dialog = new AlertDialog.Builder(ScanActivity.this)
+                                                            .setView(alertView)
+                                                            .create();
+                                                    dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                                                    cancel.setOnClickListener(new View.OnClickListener() {
+                                                        @Override
+                                                        public void onClick(View view) {
+                                                            dialog.dismiss();
+
+                                                            mCameraView.setVisibility(View.VISIBLE);
+                                                            takePicture.setVisibility(View.VISIBLE);
+                                                            scanPicture.setVisibility(View.GONE);
+                                                        }
+
+                                                    });
+                                                    print.setOnClickListener(new View.OnClickListener() {
+                                                        @Override
+                                                        public void onClick(View view) {
+                                                            new PrintAsync(ScanActivity.this,event,name,time,venue, faces.getKey().substring(1),children.getKey() + "[" + faces.getKey()).execute();
+                                                        }
+                                                    });
+                                                    Log.e("QR Code Data: ", children.getKey() + "[" + faces.getKey());
+                                                    dialog.show();
                                             /*new AlertDialog.Builder(ScanActivity.this)
                                                     .setTitle("Proceed to Printout")
                                                     .setMessage(String.format("Found %s ticket(s) for %s", quant, name))
@@ -226,31 +255,34 @@ public class ScanActivity extends Activity {
                                                         }
                                                     })
                                                     .show();*/
-                                            foundTicket = true;
-                                            break;
+                                                    foundTicket = true;
+                                                    break;
+                                                }
+                                            } catch (Exception e) {
+                                                e.printStackTrace();
+                                            }
                                         }
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
                                     }
+
+                                }
+                                if (!foundTicket) {
+                                    new AlertDialog.Builder(ScanActivity.this)
+                                            .setTitle("Error")
+                                            .setMessage("No tickets found for user")
+                                            .setPositiveButton("Ok", null)
+                                            .show();
+                                    hideImageView();
                                 }
                             }
 
-                        }
-                        if (!foundTicket) {
-                            new AlertDialog.Builder(ScanActivity.this)
-                                    .setTitle("Error")
-                                    .setMessage("No tickets found for user")
-                                    .setPositiveButton("Ok", null)
-                                    .show();
-                            hideImageView();
-                        }
-                    }
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                            }
+                        });
                     }
                 });
+
             }
         });
 
@@ -299,7 +331,7 @@ public class ScanActivity extends Activity {
             }
         }
     }
-
+int count =0;
     private UUID detectAndFrame(final Bitmap imageBitmap, final boolean frame) {
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -307,69 +339,11 @@ public class ScanActivity extends Activity {
         ByteArrayInputStream inputStream =
                 new ByteArrayInputStream(outputStream.toByteArray());
         final ArrayList<String> id = new ArrayList<>();
-        AsyncTask<InputStream, String, Face[]> detectTask = new AsyncTask<InputStream, String, Face[]>() {
-                    String exceptionMessage = "";
-                    ProgressDialog detectionProgressDialog = new ProgressDialog(ScanActivity.this);
-
-                    @Override
-                    protected Face[] doInBackground(InputStream... params) {
-                        try {
-                            publishProgress("Detecting...");
-                            Face[] result = faceServiceClient.detect(
-                                    params[0],
-                                    true,         // returnFaceId
-                                    false,        // returnFaceLandmarks
-                                    null          // returnFaceAttributes:
-                                /* new FaceServiceClient.FaceAttributeType[] {
-                                    FaceServiceClient.FaceAttributeType.Age,
-                                    FaceServiceClient.FaceAttributeType.Gender }
-                                */
-                            );
-                            if (result == null) {
-                                publishProgress(
-                                        "Detection Finished. Nothing detected");
-                                return null;
-                            }
-                            publishProgress(String.format(
-                                    "Detection Finished. %d face(s) detected",
-                                    result.length));
-                            return result;
-                        } catch (Exception e) {
-                            exceptionMessage = String.format(
-                                    "Detection failed: %s", e.getMessage());
-                            return null;
-                        }
-                    }
-
-                    @Override
-                    protected void onPreExecute() {
-                        //TODO: show progress dialog
-                        detectionProgressDialog.show();
-                    }
-
-                    @Override
-                    protected void onProgressUpdate(String... progress) {
-                        //TODO: update progress
-                        detectionProgressDialog.setMessage(progress[0]);
-                    }
-
-                    @Override
-                    protected void onPostExecute(Face[] result) {
-                        //TODO: update face frames
-                        detectionProgressDialog.dismiss();
-
-                        if (!exceptionMessage.equals("")) {
-                            showError(exceptionMessage);
-                        }
-                        if (result == null) return;
-                        if (frame) {
-                            scanPicture.setImageBitmap(
-                                    drawFaceRectanglesOnBitmap(imageBitmap, result));
-                            imageBitmap.recycle();
-                        }
-                    }
-                };
+      FaceTask detectTask = (FaceTask) new FaceTask(mContext,faceServiceClient);
         try {
+            if(count!=0)
+            detectionProgressDialog.dismiss();
+            count++;
             return detectTask.execute(inputStream).get()[0].faceId;
         } catch (Exception e) {
             e.printStackTrace();
@@ -437,6 +411,9 @@ public class ScanActivity extends Activity {
         super.onDestroy();
         mCameraView.destroy();
         mCameraView.clearFrameProcessors();
+        if (detectionProgressDialog!=null && detectionProgressDialog.isShowing()){
+            detectionProgressDialog.dismiss();
+        }
     }
 
     public Bitmap getResizedBitmap(Bitmap image, int maxSize) {
@@ -456,6 +433,7 @@ public class ScanActivity extends Activity {
 
     public void showImageView(){
         mCameraView.setVisibility(View.GONE);
+        scanPicture.setVisibility(View.VISIBLE);
         takePicture.setVisibility(View.GONE);
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
@@ -475,5 +453,92 @@ public class ScanActivity extends Activity {
         scanPicture.setLayoutParams(new LinearLayout.LayoutParams(width, 0));
     }
 
+
+    private static class FaceTask extends AsyncTask<InputStream, String, Face[]>{
+
+        Context mContext;
+        FaceServiceClient faceServiceClient;
+        ProgressDialog detectionProgressDialog;
+        private FaceTask(Context mContext, FaceServiceClient faceServiceClient){
+            this.mContext = mContext;
+            this.faceServiceClient = faceServiceClient;
+        }
+
+        String exceptionMessage = "";
+
+
+        @Override
+        protected Face[] doInBackground(InputStream... params) {
+            try {
+
+                Face[] result = faceServiceClient.detect(
+                        params[0],
+                        true,         // returnFaceId
+                        false,        // returnFaceLandmarks
+                        null          // returnFaceAttributes:
+                                /* new FaceServiceClient.FaceAttributeType[] {
+                                    FaceServiceClient.FaceAttributeType.Age,
+                                    FaceServiceClient.FaceAttributeType.Gender }
+                                */
+                );
+                if (result == null) {
+                    publishProgress(
+                            "Detection Finished. Nothing detected");
+                    return null;
+                }
+
+                publishProgress(String.format(
+                        "Detection Finished. %d face(s) detected",
+                        result.length));
+                return result;
+            } catch (Exception e) {
+                exceptionMessage = String.format(
+                        "Detection failed: %s", e.getMessage());
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPreExecute() {
+            //TODO: show progress dialog
+            super.onPreExecute();
+
+
+        }
+
+        @Override
+        protected void onProgressUpdate(String... progress) {
+            //TODO: update progress
+            //detectionProgressDialog.setMessage(progress[0]);
+        }
+
+        @Override
+        protected void onPostExecute(Face[] result) {
+            //TODO: update face frames
+
+
+            if (!exceptionMessage.equals("")) {
+                new AlertDialog.Builder(mContext)
+                        .setTitle("Error")
+                        .setMessage(exceptionMessage)
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                            }
+                        })
+                        .create().show();
+            }
+            if (result == null) return;
+            /*
+            if (frame) {
+                scanPicture.setImageBitmap(
+                        drawFaceRectanglesOnBitmap(imageBitmap, result));
+                imageBitmap.recycle();
+            }
+            */
+        }
+    }
+
 }
+
+
 
