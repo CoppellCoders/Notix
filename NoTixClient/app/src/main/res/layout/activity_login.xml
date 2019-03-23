@@ -48,6 +48,7 @@
                     android:paddingBottom="8dp"
                     />
                 <EditText
+                    android:id="@+id/email_login"
                     android:layout_width="wrap_content"
                     android:hint="Email"
                     android:drawablePadding="10dp"
@@ -57,11 +58,13 @@
                     android:textColorHint="@android:color/white"
                     android:background="@drawable/edittext_bg"
                     android:layout_height="wrap_content"
+                    android:inputType="textEmailAddress"
                     android:layout_marginBottom="10dp"
                     android:textColor="@color/colorPrimary"
                     />
 
                 <EditText
+                    android:id="@+id/password_login"
                     android:layout_width="wrap_content"
                     android:hint="Password"
                     android:background="@drawable/edittext_bg"
@@ -69,6 +72,7 @@
                     android:textColorHint="@android:color/white"
                     android:drawablePadding="10dp"
                     android:paddingLeft="10dp"
+                    android:inputType="textPassword"
                     android:textColor="@color/colorPrimary"
                     android:layout_height="wrap_content" />
 

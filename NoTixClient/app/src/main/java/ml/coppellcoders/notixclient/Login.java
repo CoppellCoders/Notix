@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -33,12 +34,52 @@ GoogleSignInClient mGoogleSignInClient;
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        final EditText email = findViewById(R.id.email_login);
+        final EditText password = findViewById(R.id.password_login);
+        Button signIn = findViewById(R.id.login_button);
         FirebaseApp.initializeApp(this);
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_iddddd))
                 .requestEmail()
                 .build();
 
+        signIn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(email.getText().toString().isEmpty()||password.getText().toString().isEmpty()){
+                    Snackbar.make(findViewById(R.id.loginsnack), "One or more field is empty", Snackbar.LENGTH_SHORT).show();
+
+                }else{
+
+
+                    mAuth.signInWithEmailAndPassword(email.getText().toString(), password.getText().toString())
+                            .addOnCompleteListener(Login.this, new OnCompleteListener<AuthResult>() {
+                                @Override
+                                public void onComplete(@NonNull Task<AuthResult> task) {
+                                    if (task.isSuccessful()) {
+                                        // Sign in success, update UI with the signed-in user's information
+                                        Log.d("signin", "signInWithEmail:success");
+                                        startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                                        finish();
+
+                                    } else {
+                                        // If sign in fails, display a message to the user.
+                                        Log.w("signin", "signInWithEmail:failure", task.getException());
+                                        Snackbar.make(findViewById(R.id.loginsnack), "Authentication Failed.", Snackbar.LENGTH_SHORT).show();
+
+
+                                    }
+
+
+                                }
+
+
+                            });
+
+                }
+
+            }
+        });
 
 
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
