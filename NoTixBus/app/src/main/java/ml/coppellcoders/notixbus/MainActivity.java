@@ -1,5 +1,6 @@
 package ml.coppellcoders.notixbus;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
@@ -11,14 +12,7 @@ import android.util.DisplayMetrics;
 import android.view.MenuItem;
 import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import com.google.firebase.FirebaseApp;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-
-import ml.coppellcoders.notixbus.*;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -34,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
                     changeFragment(new EventsFragment());
                     return true;
                 case R.id.navigation_dashboard:
-                    changeFragment(new ScanFragment());
+                    startActivity(new Intent(getApplicationContext(), QRScanner.class));
                     return true;
                 case R.id.navigation_notifications:
                     return true;

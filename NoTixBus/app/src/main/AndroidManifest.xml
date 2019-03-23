@@ -46,6 +46,10 @@
             android:label="@string/app_name">
         </activity>
         <activity
+            android:name="ml.coppellcoders.notixbus.QRScanner"
+            android:label="@string/app_name">
+        </activity>
+        <activity
             android:name="ml.coppellcoders.notixbus.ScanActivity"
             android:screenOrientation="portrait"
             android:label="@string/app_name">
