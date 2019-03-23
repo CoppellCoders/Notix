@@ -3,6 +3,7 @@ package ml.coppellcoders.notixbus;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.arch.lifecycle.LifecycleObserver;
 import android.content.DialogInterface;
@@ -13,6 +14,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.drawable.ColorDrawable;
 import android.media.Image;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -24,10 +26,12 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.FileProvider;
 import android.util.Base64;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -103,8 +107,23 @@ public class ScanActivity extends Activity {
         eventName = getIntent().getExtras().get("name").toString();
         time = getIntent().getLongExtra("time", 0);
         scanEventName.setText(eventName);
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        int height = displayMetrics.heightPixels;
+        int width = displayMetrics.widthPixels;
         mCameraView = findViewById(R.id.camera);
-
+        mCameraView.setLayoutParams(new LinearLayout.LayoutParams(width, height/2));
+        Log.i("imgSrc", imageSrc);
+        if (imageSrc.startsWith("http")) {
+            Picasso.with(this).load(imageSrc).fit().centerCrop().into(scanImage);
+        } else {
+            scanImage.setBackground(null);
+            scanImage.setImageBitmap(decodeBase64(imageSrc));
+        }
+        long timeLeft = time - System.currentTimeMillis();
+        int minutes = (int) ((timeLeft / (1000 * 60)) % 60);
+        int hours = (int) ((timeLeft / (1000 * 60 * 60)));
+        scanTime.setText(hours + " hours " + minutes + " minutes");
 
         takePicture.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -116,7 +135,11 @@ public class ScanActivity extends Activity {
         mCameraView.addCameraListener(new CameraListener() {
             @Override
             public void onPictureTaken(byte[] jpeg) {
+                showImageView();
                 Bitmap bitmap = BitmapFactory.decodeByteArray(jpeg, 0, jpeg.length);
+                Matrix matrix = new Matrix();
+                matrix.postRotate(90);
+                bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
                 Bitmap converetdImage = getResizedBitmap(bitmap, 250);
 
                 FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -143,7 +166,26 @@ public class ScanActivity extends Activity {
                                         if (b > .5) {
                                             System.out.println("Found ticket exiting");
                                             //Toast.makeText(ScanActivity.this, "Match Found " + b, Toast.LENGTH_LONG).show();
-                                            new AlertDialog.Builder(ScanActivity.this)
+                                            View alertView = getLayoutInflater().inflate(R.layout.print_id_dialog, null);
+                                            TextView info = alertView.findViewById(R.id.alert_info);
+                                            Button print = alertView.findViewById(R.id.alert_print);
+                                            ImageView cancel = alertView.findViewById(R.id.alert_cancel);
+                                            info.setText(String.format("Found %s ticket(s) for %s", quant, name));
+
+                                            AlertDialog dialog = new AlertDialog.Builder(ScanActivity.this)
+                                                    .setView(alertView)
+                                                    .create();
+                                            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                                            cancel.setOnClickListener(new View.OnClickListener() {
+                                                @Override
+                                                public void onClick(View view) {
+                                                    dialog.dismiss();
+                                                }
+
+                                            });
+                                            Log.e("QR Code Data: ", children.getKey() + "[" + faces.getKey());
+                                            dialog.show();
+                                            /*new AlertDialog.Builder(ScanActivity.this)
                                                     .setTitle("Proceed to Printout")
                                                     .setMessage(String.format("Found %s ticket(s) for %s", quant, name))
                                                     .setPositiveButton("Proceed", new DialogInterface.OnClickListener() {
@@ -177,8 +219,13 @@ public class ScanActivity extends Activity {
 
                                                         }
                                                     })
-                                                    .setNegativeButton("Cancel", null)
-                                                    .show();
+                                                    .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                                        @Override
+                                                        public void onClick(DialogInterface dialogInterface, int i) {
+                                                            hideImageView();
+                                                        }
+                                                    })
+                                                    .show();*/
                                             foundTicket = true;
                                             break;
                                         }
@@ -193,8 +240,9 @@ public class ScanActivity extends Activity {
                             new AlertDialog.Builder(ScanActivity.this)
                                     .setTitle("Error")
                                     .setMessage("No tickets found for user")
-                                    .setPositiveButton(android.R.string.no, null)
+                                    .setPositiveButton("Ok", null)
                                     .show();
+                            hideImageView();
                         }
                     }
 
@@ -205,16 +253,7 @@ public class ScanActivity extends Activity {
                 });
             }
         });
-        Log.i("imgSrc", imageSrc);
-        if (imageSrc.startsWith("http")) {
-            Picasso.with(this).load(imageSrc).fit().centerCrop().into(scanImage);
-        } else {
-            scanImage.setImageBitmap(decodeBase64(imageSrc));
-        }
-        long timeLeft = time - System.currentTimeMillis();
-        int minutes = (int) ((timeLeft / (1000 * 60)) % 60);
-        int hours = (int) ((timeLeft / (1000 * 60 * 60)));
-        scanTime.setText(hours + " hours " + minutes + " minutes");
+
 
     }
 
@@ -413,6 +452,27 @@ public class ScanActivity extends Activity {
             width = (int) (height * bitmapRatio);
         }
         return Bitmap.createScaledBitmap(image, width, height, true);
+    }
+
+    public void showImageView(){
+        mCameraView.setVisibility(View.GONE);
+        takePicture.setVisibility(View.GONE);
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        int height = displayMetrics.heightPixels;
+        int width = displayMetrics.widthPixels;
+        scanPicture.setLayoutParams(new LinearLayout.LayoutParams(width, height/2));
+
+    }
+
+    public void hideImageView(){
+        mCameraView.setVisibility(View.VISIBLE);
+        takePicture.setVisibility(View.VISIBLE);
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        int height = displayMetrics.heightPixels;
+        int width = displayMetrics.widthPixels;
+        scanPicture.setLayoutParams(new LinearLayout.LayoutParams(width, 0));
     }
 
 }

@@ -2,14 +2,21 @@ package ml.coppellcoders.notixbus;
 
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
@@ -23,6 +30,15 @@ import com.google.zxing.integration.android.IntentResult;
 import java.util.Calendar;
 
 public class ScanFragment extends Fragment {
+
+
+    ImageView cancel;
+    TextView name;
+    ImageView image;
+    TextView eventName;
+    TextView eventTime;
+    TextView eventTickets;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -49,7 +65,7 @@ public class ScanFragment extends Fragment {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     String guestName = dataSnapshot.child("guestname").getValue().toString();
-                    String image = dataSnapshot.child("faceimg").getValue().toString();
+                    String imageSrc = dataSnapshot.child("faceimg").getValue().toString();
                     String event = dataSnapshot.child("name").getValue().toString();
                     String time = dataSnapshot.child("time").getValue().toString();
                     String numTickets = dataSnapshot.child("quant").getValue().toString();
@@ -71,11 +87,31 @@ public class ScanFragment extends Fragment {
                     int mMonth = calendar.get(Calendar.MONTH);
                     int mDay = calendar.get(Calendar.DAY_OF_MONTH);
                     String date = monthNames[mMonth] + " " + mDay;
-                    new AlertDialog.Builder(getActivity())
-                            .setTitle("Ticket Info")
-                            .setMessage(String.format("Info for %s%nEvent Name: %s%nDate: %s%n numTickets: %s%n", guestName, event, date, numTickets))
-                            .setPositiveButton(android.R.string.no, null)
-                            .show();
+                    View view = getLayoutInflater().inflate(R.layout.attendee_info, null);
+                    cancel = view.findViewById(R.id.attendee_cancel);
+                    name = view.findViewById(R.id.attendee_name);
+                    image = view.findViewById(R.id.attendee_image);
+                    eventName = view.findViewById(R.id.attendee_event_name);
+                    eventTime = view.findViewById(R.id.attendee_event_time);
+                    eventTickets = view.findViewById(R.id.attendee_event_tickets);
+
+                    AlertDialog dialog = new AlertDialog.Builder(getActivity())
+                            .setView(view)
+                            .create();
+                    dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+                    cancel.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            dialog.dismiss();
+                        }
+                    });
+                    name.setText(guestName);
+                    image.setImageBitmap(decodeBase64(imageSrc));
+                    eventName.setText(event);
+                    eventTime.setText(date);
+                    eventTickets.setText(numTickets + " ticket(s)");
+                    dialog.show();
                 }
 
                 @Override
@@ -88,4 +124,9 @@ public class ScanFragment extends Fragment {
             Toast.makeText(getActivity(), "Nothing scanned", Toast.LENGTH_SHORT).show();
         }
     }
+    public static Bitmap decodeBase64(String input) {
+        byte[] decodedBytes = Base64.decode(input, 0);
+        return BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
+    }
+
 }

@@ -9,48 +9,58 @@
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@drawable/event_image"
         android:id="@+id/scan_image"
         />
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="24dp"
+        android:textSize="24sp"
         android:id="@+id/scan_event_name"
+        android:textColor="#414141"
+        android:layout_marginTop="3dp"
+        android:textStyle="bold"
+        android:layout_marginLeft="19dp"
         />
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="24dp"
+        android:textSize="18sp"
+        android:textColor="#414141"
+        android:layout_marginTop="3dp"
+        android:layout_marginLeft="19dp"
         android:id="@+id/scan_time"
         />
 
 
     <ImageView
         android:layout_width="match_parent"
-        android:layout_height="400dp"
+        android:layout_height="0dp"
         android:id="@+id/scan_picture"
-        android:layout_marginBottom="100dp"
+        android:layout_marginBottom="0dp"
         />
 
-
-
-    <RelativeLayout
+    <com.otaliastudios.cameraview.CameraView
+        android:id="@+id/camera"
+        android:keepScreenOn="true"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:paddingTop="20dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content" />
+
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Take Photo"
-            android:layout_centerInParent="true"
-            android:layout_marginBottom="100dp"
+            android:text="Scan Atendee"
+            android:paddingTop="20dp"
+            android:layout_marginTop="15dp"
+            android:textColor="#ffffff"
+            android:layout_gravity="center_horizontal"
             android:id="@+id/scan_take_photo"
+            android:background="@drawable/scan_bg"
             />
-        <com.otaliastudios.cameraview.CameraView
-            android:id="@+id/camera"
-            android:keepScreenOn="true"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-    </RelativeLayout>
+
 
 
 
