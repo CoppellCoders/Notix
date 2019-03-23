@@ -168,7 +168,7 @@ public class PrintAsync extends AsyncTask<Void, Integer, Void> {
         textPaint.setTextSize(size);
         if(bold)
             textPaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
-        StaticLayout mTextLayout = new StaticLayout(text, textPaint,width, Layout.Alignment.ALIGN_LEFT, 1.0f, 0.0f, false);
+        StaticLayout mTextLayout = new StaticLayout(text, textPaint,width, Layout.Alignment.ALIGN_NORMAL, 1.0f, 0.0f, false);
 
 
         // Create bitmap and canvas to draw to
