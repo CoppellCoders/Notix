@@ -42,6 +42,7 @@
             android:layout_marginRight="25dp"
             android:layout_marginLeft="25dp"
             android:textColor="#ffffff"
+            android:paddingLeft="8dp"
             android:id="@+id/add_event_name"
             android:textColorHint="#ffffff"
             android:hint="Name"
@@ -54,6 +55,7 @@
         android:layout_marginTop="10dp"
         >
         <EditText
+            android:paddingLeft="8dp"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
@@ -63,11 +65,12 @@
             android:hint="Date"
             android:id="@+id/add_event_date"
             android:textColor="#ffffff"
-            android:layout_marginRight="25dp"
+            android:layout_marginRight="5dp"
             android:layout_marginLeft="25dp"
             android:background="@drawable/add_event_bg"
             />
         <EditText
+            android:paddingLeft="8dp"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
@@ -78,7 +81,7 @@
             android:hint="Time"
             android:textColor="#ffffff"
             android:layout_marginRight="25dp"
-            android:layout_marginLeft="25dp"
+            android:layout_marginLeft="5dp"
             android:background="@drawable/add_event_bg"
             />
 
@@ -93,6 +96,7 @@
 
             >
             <EditText
+                android:paddingLeft="8dp"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
@@ -102,11 +106,12 @@
                 android:id="@+id/add_event_price"
                 android:inputType="numberDecimal"
                 android:textColor="#ffffff"
-                android:layout_marginRight="25dp"
+                android:layout_marginRight="5dp"
                 android:layout_marginLeft="25dp"
                 android:background="@drawable/add_event_bg"
                 />
             <EditText
+                android:paddingLeft="8dp"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
@@ -117,13 +122,14 @@
                 android:inputType="number"
                 android:textColor="#ffffff"
                 android:layout_marginRight="25dp"
-                android:layout_marginLeft="25dp"
+                android:layout_marginLeft="5dp"
                 android:background="@drawable/add_event_bg"
                 />
 
 
         </LinearLayout>
         <EditText
+            android:paddingLeft="8dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/add_event_bg"
@@ -136,6 +142,7 @@
             android:layout_marginTop="10dp"
             />
         <EditText
+            android:paddingLeft="8dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/add_event_bg"
@@ -148,14 +155,22 @@
             android:hint="Venue Address"
             />
 
+
         <Button
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/add_event_button_bg"
-            android:text="Create Event"
-            android:gravity="center"
             android:id="@+id/add_event_create"
-            android:textColor="#ffffff" />
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="-5dp"
+            android:background="@drawable/add_event_button_bg"
+            android:gravity="center"
+            android:paddingBottom="10dp"
+            android:text="Create Event"
+            android:textAllCaps="false"
+            android:textColor="@android:color/white"
+             />
+
     </LinearLayout>
+
 
 </LinearLayout>

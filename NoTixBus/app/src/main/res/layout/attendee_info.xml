@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:background="@drawable/event_item_bg"
+    android:orientation="vertical"
+    android:layout_height="wrap_content">
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Attendee Info"
+            android:textColor="#000000"
+            android:textSize="24sp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            />
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:background="@drawable/x_signup"
+        android:id="@+id/attendee_cancel"
+        />
+    </RelativeLayout>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:text="Attendee Name"
+        android:textSize="18sp"
+        android:id="@+id/attendee_name"
+        />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/attendee_image"
+            android:layout_marginLeft="25dp"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/attendee_image"
+            android:text="Brother Hackathon"
+            android:layout_marginLeft="10dp"
+            android:textSize="18sp"
+            android:id="@+id/attendee_event_name"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/attendee_image"
+            android:layout_below="@id/attendee_event_name"
+            android:text="Apr 26, 9pm"
+            android:layout_marginLeft="10dp"
+            android:textSize="18sp"
+            android:id="@+id/attendee_event_time"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/attendee_image"
+            android:layout_below="@id/attendee_event_time"
+            android:text="1 ticket"
+            android:textSize="18sp"
+            android:layout_marginLeft="10dp"
+            android:id="@+id/attendee_event_tickets"
+            />
+
+    </RelativeLayout>
+
+
+
+</LinearLayout>
