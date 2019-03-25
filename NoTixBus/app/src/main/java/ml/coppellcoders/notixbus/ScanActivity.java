@@ -70,7 +70,7 @@ public class ScanActivity extends Activity {
     Context mContext;
     ProgressDialog detectionProgressDialog;
     private final String apiEndpoint = "https://westcentralus.api.cognitive.microsoft.com/face/v1.0";
-    private final String subscriptionKey = "8cbcd7079f334206968fbba199aaff0a";
+    private final String subscriptionKey = "cdfaf739d2bc450e97502afda8646e7a";
     FaceServiceClient faceServiceClient = new FaceServiceRestClient(apiEndpoint, subscriptionKey);
     ;
     static final int REQUEST_IMAGE_CAPTURE = 1;
