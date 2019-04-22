@@ -67,6 +67,7 @@ public class ScanActivity extends Activity {
     String currentPhotoPath = "";
     String eventName = "";
     private CameraView mCameraView;
+
     Context mContext;
     ProgressDialog detectionProgressDialog;
     private final String apiEndpoint = "https://westcentralus.api.cognitive.microsoft.com/face/v1.0";
@@ -185,9 +186,43 @@ public class ScanActivity extends Activity {
                                                 if (b > .5) {
                                                     System.out.println("Found ticket exiting");
                                                     //Toast.makeText(ScanActivity.this, "Match Found " + b, Toast.LENGTH_LONG).show();
+                                                    View view = getLayoutInflater().inflate(R.layout.attendee_info, null);
+                                                    ImageView cancel;
+                                                    TextView nameTextView;
+                                                    ImageView imageView;
+                                                    TextView eventName;
+                                                    TextView eventTime;
+                                                    TextView eventTickets;
+                                                    AlertDialog dialog;
+                                                    cancel = view.findViewById(R.id.attendee_cancel);
+                                                    nameTextView = view.findViewById(R.id.attendee_name);
+                                                    imageView = view.findViewById(R.id.attendee_image);
+                                                    eventName = view.findViewById(R.id.attendee_event_name);
+                                                    eventTime = view.findViewById(R.id.attendee_event_time);
+                                                    eventTickets = view.findViewById(R.id.attendee_event_tickets);
+
+                                                        dialog = new AlertDialog.Builder(ScanActivity.this)
+                                                                .setView(view)
+                                                                .create();
+                                                        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+                                                        nameTextView.setText(name);
+                                                        imageView.setImageBitmap(decodeBase64(imageSrc));
+                                                        eventName.setText(event);
+                                                        eventTime.setText(time);
+                                                        eventTickets.setText(quant + " ticket(s)");
+                                                        dialog.show();
+                                                    cancel.setOnClickListener(new View.OnClickListener() {
+                                                        @Override
+                                                        public void onClick(View view) {
+                                                            dialog.dismiss();
+                                                        }
+                                                    });
+                                                    }
                                                     View alertView = getLayoutInflater().inflate(R.layout.print_id_dialog, null);
                                                     TextView info = alertView.findViewById(R.id.alert_info);
                                                     Button print = alertView.findViewById(R.id.alert_print);
+                                                    print.setVisibility(View.VISIBLE);
                                                     ImageView cancel = alertView.findViewById(R.id.alert_cancel);
                                                     info.setText(String.format("Found %s ticket(s) for %s", quant, name));
 
@@ -214,50 +249,9 @@ public class ScanActivity extends Activity {
                                                     });
                                                     Log.e("QR Code Data: ", children.getKey() + "[" + faces.getKey());
                                                     dialog.show();
-                                            /*new AlertDialog.Builder(ScanActivity.this)
-                                                    .setTitle("Proceed to Printout")
-                                                    .setMessage(String.format("Found %s ticket(s) for %s", quant, name))
-                                                    .setPositiveButton("Proceed", new DialogInterface.OnClickListener() {
-                                                        @Override
-                                                        public void onClick(DialogInterface dialogInterface, int i) {
-                                                            QRCodeWriter writer = new QRCodeWriter();
-                                                            try {
-                                                                BitMatrix qrCode = writer.encode(children.getKey() + "[" + faces.getKey(), BarcodeFormat.QR_CODE, 512, 512);
-                                                                int width = qrCode.getWidth();
-                                                                int height = qrCode.getHeight();
-                                                                Bitmap bmp = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
-                                                                for (int x = 0; x < width; x++) {
-                                                                    for (int y = 0; y < height; y++) {
-                                                                        bmp.setPixel(x, y, qrCode.get(x, y) ? Color.BLACK : Color.WHITE);
-                                                                    }
-                                                                }
-                                                                //Name of Event: eventName
-                                                                //Name of Person: name
-                                                                //Time: time (long)
-                                                                //Venue
-                                                                String venue = children.child("venue").getValue().toString();
-                                                                //Ticket ID:
-                                                                String ticketID = faces.getKey();
-                                                                //QR Code qrCode {Bit Map)
-                                                                Log.i("Info", String.format("Event Name: %s%n Person Name: %s%n Time: %d%n Venue: %s%n Ticket ID: %s%n"
-                                                                        , eventName, name, time, venue, ticketID));
-                                                                Log.e("QR Code Data: ", children.getKey() + "[" + faces.getKey());
-                                                            } catch (WriterException e) {
-                                                                e.printStackTrace();
-                                                            }
-
-                                                        }
-                                                    })
-                                                    .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                                                        @Override
-                                                        public void onClick(DialogInterface dialogInterface, int i) {
-                                                            hideImageView();
-                                                        }
-                                                    })
-                                                    .show();*/
                                                     foundTicket = true;
                                                     break;
-                                                }
+
                                             } catch (Exception e) {
                                                 e.printStackTrace();
                                             }
