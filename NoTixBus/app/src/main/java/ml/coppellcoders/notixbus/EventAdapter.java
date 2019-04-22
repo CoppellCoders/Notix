@@ -104,8 +104,9 @@ public class EventAdapter extends RecyclerViewAdapter<Event, EventAdapter.ItemIt
             date.setText(monthNames[mMonth] + " " + mDay);
             location.setText(Item.getVenue());
             long timeLeft = Item.getTime() - System.currentTimeMillis();
-            int minutes = (int) ((timeLeft / (1000*60)) % 60);
-            int hours   = (int) ((timeLeft / (1000*60*60)) % 24);
+            int minutes = (int) ((timeLeft / (1000 * 60)) % 60);
+            int hours = (int) ((timeLeft / (1000 * 60 * 60)));
+
             time.setText(hours+" hours " + minutes +" minutes");
         }
 
