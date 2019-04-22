@@ -16,16 +16,16 @@
             android:layout_marginLeft="30dp"
             android:layout_marginTop="10dp"
             />
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true"
-        android:background="@drawable/x_signup"
-        android:id="@+id/attendee_cancel"
-        android:layout_marginTop="10dp"
-        android:layout_marginRight="10dp"
-        />
+
+        <ImageView
+            android:id="@+id/attendee_cancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="10dp"
+            android:background="@drawable/x_signup" />
     </RelativeLayout>
     <TextView
         android:layout_width="wrap_content"
@@ -85,6 +85,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/blockchain"
+        android:layout_marginTop="10dp"
         android:id="@+id/scan_verified"
         />
     <Button
