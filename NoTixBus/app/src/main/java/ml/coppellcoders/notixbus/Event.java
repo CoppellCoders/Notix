@@ -1,6 +1,10 @@
 package ml.coppellcoders.notixbus;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.List;
+
+import ml.coppellcoders.notixbus.blockchain.Block;
 
 public class Event implements Serializable{
     String address;
@@ -11,12 +15,13 @@ public class Event implements Serializable{
     long quantity;
     long time;
     String venue;
+    HashMap<String,Block> tickets;
 
     public Event(){
 
     }
 
-    public Event(String address, String category, String img, String name, long price, long quantity, long time, String venue){
+    public Event(String address, String category, String img, String name, long price, long quantity, long time, String venue, HashMap<String,Block> tickets){
         this.address = address;
         this.category = category;
         this.img = img;
@@ -25,6 +30,7 @@ public class Event implements Serializable{
         this.quantity = quantity;
         this.time = time;
         this.venue = venue;
+        this.tickets = tickets;
     }
 
     public String getAddress() {

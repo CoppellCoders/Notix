@@ -19,8 +19,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import ml.coppellcoders.notixbus.blockchain.Block;
 
 public class AddEventActivity extends Activity{
 
@@ -55,11 +59,13 @@ public class AddEventActivity extends Activity{
                  String date = eventDate.getText().toString() + " " + eventTime.getText().toString();
                 SimpleDateFormat df = new SimpleDateFormat("MM/dd/yyyy hh:mm");
                 try {
+                    HashMap<String,Block> blockList = new HashMap();
+                    blockList.put("-A",new Block((long) 0,"0","0","0","0","0","0","0",0,0,0,"0"));
                     event = new Event(eventVenueAddress.getText().toString(), "Other", "temp",
                             eventName.getText().toString(), Long.parseLong(eventPrice.getText().toString()),
                             Long.parseLong(eventQuantity.getText().toString()),
                             df.parse(date).getTime(),
-                            eventVenue.getText().toString());
+                            eventVenue.getText().toString(),blockList);
                     Intent intent = new Intent();
                     intent.setType("image/*");
                     intent.setAction(Intent.ACTION_GET_CONTENT);

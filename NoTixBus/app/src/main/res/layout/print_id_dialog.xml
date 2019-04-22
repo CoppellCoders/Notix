@@ -35,4 +35,17 @@
         android:background="@drawable/scan_bg"
         />
 
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:textAllCaps="false"
+        android:textSize="20dp"
+        android:textColor="#ffffff"
+        android:layout_gravity="center_horizontal"
+        android:id="@+id/alert_verified"
+        android:background="@drawable/blockchain_true"
+        />
+
+
 </LinearLayout>

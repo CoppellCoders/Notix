@@ -30,6 +30,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -68,9 +69,10 @@ public class ScanActivity extends Activity {
     String eventName = "";
     private CameraView mCameraView;
     Context mContext;
+    String previousHash = null;
     ProgressDialog detectionProgressDialog;
     private final String apiEndpoint = "https://westcentralus.api.cognitive.microsoft.com/face/v1.0";
-    private final String subscriptionKey = "cdfaf739d2bc450e97502afda8646e7a";
+    private final String subscriptionKey = "e179e439aedf444d987a371ce87a9a20";
     FaceServiceClient faceServiceClient = new FaceServiceRestClient(apiEndpoint, subscriptionKey);
     ;
     static final int REQUEST_IMAGE_CAPTURE = 1;
@@ -140,80 +142,100 @@ public class ScanActivity extends Activity {
                         FirebaseDatabase database = FirebaseDatabase.getInstance();
                         DatabaseReference myRef = database.getReference("Events");
                         final UUID firstUserId = detectAndFrame(converetdImage, true);
+
                         myRef.addValueEventListener(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                 boolean foundTicket = false;
+
                                 for (DataSnapshot children : dataSnapshot.getChildren()) {
 
                                     if (children.child("name").getValue().toString().equals(eventName)) {
                                         for (DataSnapshot faces : children.child("tickets").getChildren()) {
+                                            if(previousHash == null){
+                                                previousHash = faces.child("hash").getValue().toString();
+                                            }
                                             String name = faces.child("guestname").getValue().toString();
                                             String image = faces.child("faceimg").getValue().toString();
-                                            String quant = faces.child("quant").getValue().toString();
-                                            String event = faces.child("name").getValue().toString();
-                                            String venue = faces.child("venue").getValue().toString();
-                                            long date = Long.parseLong(faces.child("time").getValue().toString());
+                                            if(!image.equals("0")){
+                                                String quant = faces.child("quant").getValue().toString();
+                                                String event = faces.child("name").getValue().toString();
+                                                String venue = faces.child("venue").getValue().toString();
+                                                long date = Long.parseLong(faces.child("time").getValue().toString());
 
-                                            Calendar calendar = Calendar.getInstance();
-                                            calendar.setTimeInMillis(date);
-                                            int mMonth = calendar.get(Calendar.MONTH);
-                                            int mDay = calendar.get(Calendar.DAY_OF_MONTH);
-                                            String[] monthNames = new String[12];
-                                            monthNames[0] = "Jan";
-                                            monthNames[1] = "Feb";
-                                            monthNames[2] = "Mar";
-                                            monthNames[3] = "Apr";
-                                            monthNames[4] = "May";
-                                            monthNames[5] = "Jun";
-                                            monthNames[6] = "Jul";
-                                            monthNames[7] = "Aug";
-                                            monthNames[8] = "Sep";
-                                            monthNames[9] = "Oct";
-                                            monthNames[10] = "Nov";
-                                            monthNames[11] = "Dec";
+                                                Calendar calendar = Calendar.getInstance();
+                                                calendar.setTimeInMillis(date);
+                                                int mMonth = calendar.get(Calendar.MONTH);
+                                                int mDay = calendar.get(Calendar.DAY_OF_MONTH);
+                                                String[] monthNames = new String[12];
+                                                monthNames[0] = "Jan";
+                                                monthNames[1] = "Feb";
+                                                monthNames[2] = "Mar";
+                                                monthNames[3] = "Apr";
+                                                monthNames[4] = "May";
+                                                monthNames[5] = "Jun";
+                                                monthNames[6] = "Jul";
+                                                monthNames[7] = "Aug";
+                                                monthNames[8] = "Sep";
+                                                monthNames[9] = "Oct";
+                                                monthNames[10] = "Nov";
+                                                monthNames[11] = "Dec";
 
-                                            String time =  monthNames[mMonth] + " " + mDay;
+                                                String time =  monthNames[mMonth] + " " + mDay;
 
-                                            Bitmap temp = decodeBase64(image);
-                                            UUID curUserId = detectAndFrame(temp, false);
-                                            Log.i("User ID's", firstUserId + " " + curUserId);
-                                            try {
-                                                StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-                                                StrictMode.setThreadPolicy(policy);
-                                                double b = faceServiceClient.verify(firstUserId, curUserId).confidence;
-                                                if (b > .5) {
-                                                    System.out.println("Found ticket exiting");
-                                                    //Toast.makeText(ScanActivity.this, "Match Found " + b, Toast.LENGTH_LONG).show();
-                                                    View alertView = getLayoutInflater().inflate(R.layout.print_id_dialog, null);
-                                                    TextView info = alertView.findViewById(R.id.alert_info);
-                                                    Button print = alertView.findViewById(R.id.alert_print);
-                                                    ImageView cancel = alertView.findViewById(R.id.alert_cancel);
-                                                    info.setText(String.format("Found %s ticket(s) for %s", quant, name));
+                                                Bitmap temp = decodeBase64(image);
+                                                UUID curUserId = detectAndFrame(temp, false);
+                                                Log.i("User ID's", firstUserId + " " + curUserId);
+                                                try {
+                                                    StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+                                                    StrictMode.setThreadPolicy(policy);
+                                                    double b = faceServiceClient.verify(firstUserId, curUserId).confidence;
+                                                   Log.e("erorr",b + " %");
+                                                    if (b > .5) {
+                                                        foundTicket = true;
+                                                        System.out.println("Found ticket exiting");
+                                                        //Toast.makeText(ScanActivity.this, "Match Found " + b, Toast.LENGTH_LONG).show();
+                                                        View alertView = getLayoutInflater().inflate(R.layout.print_id_dialog, null);
+                                                        TextView info = alertView.findViewById(R.id.alert_info);
+                                                        Button print = alertView.findViewById(R.id.alert_print);
+                                                        ImageView cancel = alertView.findViewById(R.id.alert_cancel);
+                                                        ImageView alert_verified = alertView.findViewById(R.id.alert_verified);
+                                                        info.setText(String.format("Found %s ticket(s) for %s", quant, name));
 
-                                                    AlertDialog dialog = new AlertDialog.Builder(ScanActivity.this)
-                                                            .setView(alertView)
-                                                            .create();
-                                                    dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                                                    cancel.setOnClickListener(new View.OnClickListener() {
-                                                        @Override
-                                                        public void onClick(View view) {
-                                                            dialog.dismiss();
+                                                        AlertDialog dialog = new AlertDialog.Builder(ScanActivity.this)
+                                                                .setView(alertView)
+                                                                .create();
+                                                        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                                                        cancel.setOnClickListener(new View.OnClickListener() {
+                                                            @Override
+                                                            public void onClick(View view) {
+                                                                dialog.dismiss();
 
-                                                            mCameraView.setVisibility(View.VISIBLE);
-                                                            takePicture.setVisibility(View.VISIBLE);
-                                                            scanPicture.setVisibility(View.GONE);
+                                                                mCameraView.setVisibility(View.VISIBLE);
+                                                                takePicture.setVisibility(View.VISIBLE);
+                                                                scanPicture.setVisibility(View.GONE);
+                                                            }
+
+                                                        });
+                                                        print.setOnClickListener(new View.OnClickListener() {
+                                                            @Override
+                                                            public void onClick(View view) {
+                                                                if(previousHash.equals(faces.child("previousHash").getValue().toString())) {
+                                                                    new PrintAsync(ScanActivity.this, event, name, time, venue, faces.getKey().substring(1), children.getKey() + "[" + faces.getKey()).execute();
+                                                                }else{
+                                                                    Toast.makeText(getApplication(),"Error on the blockchain",Toast.LENGTH_SHORT).show();
+                                                                }
+                                                            }
+                                                        });
+                                                        System.out.println(previousHash + "\n" + faces.child("previousHash").getValue().toString());
+                                                        if(previousHash.equals(faces.child("previousHash").getValue().toString())){
+                                                            alert_verified.setBackgroundResource(R.drawable.blockchain_true);
+                                                        }else{
+                                                            alert_verified.setBackgroundResource(R.drawable.blockchain_false);
+
                                                         }
-
-                                                    });
-                                                    print.setOnClickListener(new View.OnClickListener() {
-                                                        @Override
-                                                        public void onClick(View view) {
-                                                            new PrintAsync(ScanActivity.this,event,name,time,venue, faces.getKey().substring(1),children.getKey() + "[" + faces.getKey()).execute();
-                                                        }
-                                                    });
-                                                    Log.e("QR Code Data: ", children.getKey() + "[" + faces.getKey());
-                                                    dialog.show();
+                                                        Log.e("QR Code Data: ", children.getKey() + "[" + faces.getKey());
+                                                        dialog.show();
                                             /*new AlertDialog.Builder(ScanActivity.this)
                                                     .setTitle("Proceed to Printout")
                                                     .setMessage(String.format("Found %s ticket(s) for %s", quant, name))
@@ -255,24 +277,30 @@ public class ScanActivity extends Activity {
                                                         }
                                                     })
                                                     .show();*/
-                                                    foundTicket = true;
-                                                    break;
+
+                                                        break;
+                                                    }else{
+                                                        previousHash = faces.child("hash").getValue().toString();
+                                                    }
+                                                } catch (Exception e) {
+                                                    e.printStackTrace();
                                                 }
-                                            } catch (Exception e) {
-                                                e.printStackTrace();
                                             }
                                         }
-                                    }
 
-                                }
-                                if (!foundTicket) {
-                                    new AlertDialog.Builder(ScanActivity.this)
-                                            .setTitle("Error")
-                                            .setMessage("No tickets found for user")
-                                            .setPositiveButton("Ok", null)
-                                            .show();
-                                    hideImageView();
-                                }
+                                    }
+                                    if (!foundTicket) {
+
+
+                                        new AlertDialog.Builder(ScanActivity.this)
+                                                .setTitle("Error")
+                                                .setMessage("No tickets found for user")
+                                                .setPositiveButton("Ok", null)
+                                                .show();
+                                        hideImageView();
+                                    }
+                                            }
+
                             }
 
                             @Override

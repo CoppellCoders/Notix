@@ -79,7 +79,7 @@ public class PrintAsync extends AsyncTask<Void, Integer, Void> {
 
         QRCodeWriter writer = new QRCodeWriter();
         try {
-            BitMatrix qrCode = writer.encode(qrcode, BarcodeFormat.QR_CODE, 600, 600);
+            BitMatrix qrCode = writer.encode(qrcode, BarcodeFormat.QR_CODE, 800, 800);
             int width = qrCode.getWidth();
             int height = qrCode.getHeight();
             Bitmap bmp = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
@@ -89,17 +89,23 @@ public class PrintAsync extends AsyncTask<Void, Integer, Void> {
                 }
             }
 
-            Bitmap bitmap =  overlay(icon,bmp,2914,1560);
-            Bitmap bitma = drawText(event,2500,150,"#FFFFFF",true);
-            bitmap = overlay(bitmap,bitma,84,80);
-            bitma = drawText(name,1337,120,"#FFFFFF",false);
-            bitmap = overlay(bitmap,bitma,84,250);
-            bitma = drawText(date,1337,120,"#FFFFFF",false);
-            bitmap = overlay(bitmap,bitma,84,400);
-            bitma = drawText(venue,2500,160,"#676767",false);
-            bitmap = overlay(bitmap,bitma,459,760);
+
+            System.out.println(icon.getWidth() + " " + icon.getHeight());
+            Bitmap bitmap =  overlay(icon,bmp,2800,1450);
+
+            Bitmap bitma = drawText(event,1500*event.length()/19,150,"#FFFFFF",true);
+            bitmap = overlay(bitmap,bitma,2,80);
+
+            bitma = drawText(name,500*name.length()/6,120,"#FFFFFF",false);
+            bitmap = overlay(bitmap,bitma,2,250);
+
+            bitma = drawText(date,450,120,"#FFFFFF",false);
+            bitmap = overlay(bitmap,bitma,2,400);
+
+            bitma = drawText(venue,2000*venue.length()/24,160,"#676767",false);
+            bitmap = overlay(bitmap,bitma,400,760);
             bitma = drawText("Ticket ID: "+ id,2500,120,"#676767",false);
-            bitmap = overlay(bitmap,bitma,459,1100);
+            bitmap = overlay(bitmap,bitma,84,1000);
             //img.setImageBitmap(bitmap);
             myPrint.setFiles(bitmap);
             myPrint.print(pdia);
