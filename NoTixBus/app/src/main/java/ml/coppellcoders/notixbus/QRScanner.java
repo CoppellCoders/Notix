@@ -89,94 +89,103 @@ public class QRScanner extends Activity implements QRCodeReaderView.OnQRCodeRead
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 String guestName = dataSnapshot.child("guestname").getValue().toString();
                 String imageSrc = dataSnapshot.child("faceimg").getValue().toString();
-                String event = dataSnapshot.child("name").getValue().toString();
-                String time = dataSnapshot.child("time").getValue().toString();
-                String numTickets = dataSnapshot.child("quant").getValue().toString();
-                String prevHash = dataSnapshot.child("previousHash").getValue().toString();
-                String[] monthNames = new String[12];
-                monthNames[0] = "Jan";
-                monthNames[1] = "Feb";
-                monthNames[2] = "Mar";
-                monthNames[3] = "Apr";
-                monthNames[4] = "May";
-                monthNames[5] = "Jun";
-                monthNames[6] = "Jul";
-                monthNames[7] = "Aug";
-                monthNames[8] = "Sep";
-                monthNames[9] = "Oct";
-                monthNames[10] = "Nov";
-                monthNames[11] = "Dec";
-                Calendar calendar = Calendar.getInstance();
-                calendar.setTimeInMillis(Long.parseLong(time));
-                int mMonth = calendar.get(Calendar.MONTH);
-                int mDay = calendar.get(Calendar.DAY_OF_MONTH);
-                String date = monthNames[mMonth] + " " + mDay;
-                View view = getLayoutInflater().inflate(R.layout.attendee_info, null);
-                cancel = view.findViewById(R.id.attendee_cancel);
-                name = view.findViewById(R.id.attendee_name);
-                image = view.findViewById(R.id.attendee_image);
-                eventName = view.findViewById(R.id.attendee_event_name);
-                eventTime = view.findViewById(R.id.attendee_event_time);
-                eventTickets = view.findViewById(R.id.attendee_event_tickets);
-                ImageView scanVerified = view.findViewById(R.id.scan_verified);
-                if(dialog==null || !dialog.isShowing()) {
-                    dialog = new AlertDialog.Builder(QRScanner.this)
-                            .setView(view)
-                            .create();
-                    dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                if(!imageSrc.equals("0")){
+                    String event = dataSnapshot.child("name").getValue().toString();
+                    String time = dataSnapshot.child("time").getValue().toString();
+                    String numTickets = dataSnapshot.child("quant").getValue().toString();
+                    String prevHash = dataSnapshot.child("previousHash").getValue().toString();
+                    String[] monthNames = new String[12];
+                    monthNames[0] = "Jan";
+                    monthNames[1] = "Feb";
+                    monthNames[2] = "Mar";
+                    monthNames[3] = "Apr";
+                    monthNames[4] = "May";
+                    monthNames[5] = "Jun";
+                    monthNames[6] = "Jul";
+                    monthNames[7] = "Aug";
+                    monthNames[8] = "Sep";
+                    monthNames[9] = "Oct";
+                    monthNames[10] = "Nov";
+                    monthNames[11] = "Dec";
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.setTimeInMillis(Long.parseLong(time));
+                    int mMonth = calendar.get(Calendar.MONTH);
+                    int mDay = calendar.get(Calendar.DAY_OF_MONTH);
+                    String date = monthNames[mMonth] + " " + mDay;
+                    View view = getLayoutInflater().inflate(R.layout.attendee_info, null);
+                    cancel = view.findViewById(R.id.attendee_cancel);
+                    name = view.findViewById(R.id.attendee_name);
+                    image = view.findViewById(R.id.attendee_image);
+                    eventName = view.findViewById(R.id.attendee_event_name);
+                    eventTime = view.findViewById(R.id.attendee_event_time);
+                    eventTickets = view.findViewById(R.id.attendee_event_tickets);
+                    ImageView scanVerified = view.findViewById(R.id.scan_verified);
+                    if(dialog==null || !dialog.isShowing()) {
+                        dialog = new AlertDialog.Builder(QRScanner.this)
+                                .setView(view)
+                                .create();
+                        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
-                    cancel.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            dialog.dismiss();
-                        }
-                    });
-                    name.setText(guestName);
-                    image.setImageBitmap(decodeBase64(imageSrc));
-                    eventName.setText(event);
-                    eventTime.setText(date);
-                    eventTickets.setText(numTickets + " ticket(s)");
-                    myRefBlock.addChildEventListener(new ChildEventListener() {
-                        @Override
-                        public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                            Log.e("err", dataSnapshot.toString());
-                            if(!dataSnapshot.getKey().equals(ticket)&&!dataSnap){
-                                hash = dataSnapshot.child("hash").getValue().toString();
-                                if(hash.equals(prevHash)){
-                                    scanVerified.setBackgroundResource(R.drawable.blockchain_true);
-                                }else{
-                                    scanVerified.setBackgroundResource(R.drawable.blockchain_false);
-                                }
-                            }else{
-                                dataSnap = true;
+                        cancel.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                dialog.dismiss();
                             }
-                        }
+                        });
+                        name.setText(guestName);
+                        image.setImageBitmap(decodeBase64(imageSrc));
+                        eventName.setText(event);
+                        eventTime.setText(date);
+                        eventTickets.setText(numTickets + " ticket(s)");
+                        myRefBlock.addChildEventListener(new ChildEventListener() {
+                            @Override
+                            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                                Log.e("err", dataSnapshot.getKey());
+                                if(!dataSnapshot.getKey().equals(ticket)){
+                                    hash = dataSnapshot.child("hash").getValue().toString();
+                                }else{
+                                    if(hash.equals(prevHash)){
+                                        System.out.println("worka "+hash + " " + prevHash);
 
-                        @Override
-                        public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                                        scanVerified.setBackgroundResource(R.drawable.blockchain_true);
+                                    }else{
+                                        System.out.println("worka "+hash + " F " + prevHash);
+                                        scanVerified.setBackgroundResource(R.drawable.blockchain_false);
+                                    }
+                                    myRefBlock.removeEventListener(this);
 
-                        }
+                                }
+                            }
 
-                        @Override
-                        public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+                            @Override
+                            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
-                        }
+                            }
 
-                        @Override
-                        public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                            @Override
+                            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
 
-                        }
+                            }
 
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                            @Override
+                            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
-                        }
-                    });
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+
+                        });
+
+                        myRef.removeEventListener(this);
+                        dialog.show();
 
 
-                    dialog.show();
-
+                    }
                 }
+
             }
 
             @Override

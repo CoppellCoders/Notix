@@ -244,11 +244,14 @@ public class ScanActivity extends Activity {
                                                                 }
                                                             }
                                                         });
-                                                        System.out.println(previousHash + "\n" + faces.child("previousHash").getValue().toString());
-                                                        if(previousHash.equals(faces.child("previousHash").getValue().toString())){
-                                                            alert_verified.setBackgroundResource(R.drawable.blockchain_true);
+                                                         if(previousHash.equals(faces.child("previousHash").getValue().toString())){
+                                                             System.out.println("worka "+previousHash + " " + faces.child("previousHash").getValue().toString());
+
+                                                             alert_verified.setBackgroundResource(R.drawable.blockchain_true);
                                                         }else{
-                                                            alert_verified.setBackgroundResource(R.drawable.blockchain_false);
+                                                             System.out.println("worka "+previousHash + " F " + faces.child("previousHash").getValue().toString());
+
+                                                             alert_verified.setBackgroundResource(R.drawable.blockchain_false);
 
                                                         }
                                                         Log.e("QR Code Data: ", children.getKey() + "[" + faces.getKey());
@@ -276,7 +279,7 @@ public class ScanActivity extends Activity {
                                         hideImageView();
                                     }
                                 }
-
+                            myRef.removeEventListener(this);
                             }
 
                             @Override
