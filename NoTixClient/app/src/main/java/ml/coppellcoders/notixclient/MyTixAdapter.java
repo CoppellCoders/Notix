@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
 import android.util.Base64;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -88,12 +89,12 @@ public class MyTixAdapter extends RecyclerViewAdapter<BuyInfoModel, MyTixAdapter
             monthNames[10] = "Nov";
             monthNames[11] = "Dec";
             final long millis = events.getTime() - System.currentTimeMillis();
-            int hours = (int) (TimeUnit.MILLISECONDS.toHours(millis) - TimeUnit.HOURS.toHours(TimeUnit.MILLISECONDS.toHours(millis)));
-            int mins = (int) (TimeUnit.MILLISECONDS.toMinutes(millis) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millis)));
+            int minutes = (int) ((millis / (1000 * 60)) % 60);
+            int hours = (int) ((millis / (1000 * 60 * 60)));
 
             date.setText(monthNames[mMonth] + " " + mDay);
 
-            price.setText(hours + " hours " + mins +" mins");
+            price.setText(hours + " hour(s) " + minutes +" min(s)");
 
         }
     }

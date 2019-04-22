@@ -20,6 +20,7 @@ public class BuyInfoModel implements Serializable {
         this.price = price;
         this.quantity = quantity;
         this.quant = quant;
+
     }
 
     public BuyInfoModel(){

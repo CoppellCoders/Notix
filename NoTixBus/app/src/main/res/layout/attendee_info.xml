@@ -36,45 +36,47 @@
         android:textSize="18sp"
         android:id="@+id/attendee_name"
         />
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:id="@+id/attendee_image"
-            android:layout_marginLeft="25dp"
-            />
-        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="25dp" />
+
+        <TextView
+            android:id="@+id/attendee_event_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
             android:layout_toRightOf="@id/attendee_image"
             android:text="Brother Hackathon"
-            android:layout_marginLeft="10dp"
-            android:textSize="18sp"
-            android:id="@+id/attendee_event_name"
-            />
+            android:textSize="18sp" />
+
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_toRightOf="@id/attendee_image"
-            android:layout_below="@id/attendee_event_name"
-            android:text="Apr 26, 9pm"
-            android:layout_marginLeft="10dp"
-            android:textSize="18sp"
             android:id="@+id/attendee_event_time"
-            />
-        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_toRightOf="@id/attendee_image"
-            android:layout_below="@id/attendee_event_time"
-            android:text="1 ticket"
-            android:textSize="18sp"
+            android:layout_below="@id/attendee_event_name"
             android:layout_marginLeft="10dp"
+            android:layout_toRightOf="@id/attendee_image"
+            android:text="Apr 26, 9pm"
+            android:textSize="18sp" />
+
+        <TextView
             android:id="@+id/attendee_event_tickets"
-            />
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/attendee_event_time"
+            android:layout_marginLeft="10dp"
+            android:layout_toRightOf="@id/attendee_image"
+            android:text="1 ticket"
+            android:textSize="18sp" />
+
+
 
     </RelativeLayout>
 
@@ -83,6 +85,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/blockchain"
+        android:id="@+id/scan_verified"
         />
     <Button
         android:layout_width="wrap_content"
@@ -98,5 +101,4 @@
         android:id="@+id/alert_print"
         android:background="@drawable/printindbg"
         />
-
 </LinearLayout>

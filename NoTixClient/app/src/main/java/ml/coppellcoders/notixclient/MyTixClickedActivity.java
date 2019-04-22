@@ -101,9 +101,11 @@ public class MyTixClickedActivity extends AppCompatActivity {
 
         final long millis = event.getTime() - System.currentTimeMillis();
 
-        int hours = (int) (TimeUnit.MILLISECONDS.toHours(millis) - TimeUnit.HOURS.toHours(TimeUnit.MILLISECONDS.toHours(millis)));
-        int mins = (int) (TimeUnit.MILLISECONDS.toMinutes(millis) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millis)));
-        date.setText(hours + " hours " + mins +" mins");
+
+        int minutes = (int) ((millis / (1000 * 60)) % 60);
+        int hours = (int) ((millis / (1000 * 60 * 60)));
+
+        date.setText(hours + " hour(s) " + minutes +" min(s)");
 
         int mMonth = calendar.get(Calendar.MONTH);
         int mDay = calendar.get(Calendar.DAY_OF_MONTH);

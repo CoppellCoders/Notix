@@ -23,6 +23,7 @@ import android.widget.Toast;
 
 //import com.dlazaro66.qrcodereaderview.QRCodeReaderView;
 import com.dlazaro66.qrcodereaderview.QRCodeReaderView;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -36,7 +37,7 @@ import java.util.Calendar;
 
 public class QRScanner extends Activity implements QRCodeReaderView.OnQRCodeReadListener {
 
-
+    String hash;
     ImageView cancel;
     TextView name;
     ImageView image;
@@ -45,7 +46,7 @@ public class QRScanner extends Activity implements QRCodeReaderView.OnQRCodeRead
     TextView eventTickets;
     AlertDialog dialog;
     private QRCodeReaderView qrCodeReaderView;
-
+    boolean dataSnap = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -74,6 +75,15 @@ public class QRScanner extends Activity implements QRCodeReaderView.OnQRCodeRead
         String ticket = parts[1];
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("Events/"+event+"/tickets/"+ticket);
+
+        DatabaseReference myRefBlock = database.getReference("Events/"+event+"/tickets/");
+        hash = null;
+        dataSnap = false;
+
+
+
+
+
         myRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -82,6 +92,7 @@ public class QRScanner extends Activity implements QRCodeReaderView.OnQRCodeRead
                 String event = dataSnapshot.child("name").getValue().toString();
                 String time = dataSnapshot.child("time").getValue().toString();
                 String numTickets = dataSnapshot.child("quant").getValue().toString();
+                String prevHash = dataSnapshot.child("previousHash").getValue().toString();
                 String[] monthNames = new String[12];
                 monthNames[0] = "Jan";
                 monthNames[1] = "Feb";
@@ -107,6 +118,7 @@ public class QRScanner extends Activity implements QRCodeReaderView.OnQRCodeRead
                 eventName = view.findViewById(R.id.attendee_event_name);
                 eventTime = view.findViewById(R.id.attendee_event_time);
                 eventTickets = view.findViewById(R.id.attendee_event_tickets);
+                ImageView scanVerified = view.findViewById(R.id.scan_verified);
                 if(dialog==null || !dialog.isShowing()) {
                     dialog = new AlertDialog.Builder(QRScanner.this)
                             .setView(view)
@@ -124,7 +136,46 @@ public class QRScanner extends Activity implements QRCodeReaderView.OnQRCodeRead
                     eventName.setText(event);
                     eventTime.setText(date);
                     eventTickets.setText(numTickets + " ticket(s)");
+                    myRefBlock.addChildEventListener(new ChildEventListener() {
+                        @Override
+                        public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                            Log.e("err", dataSnapshot.toString());
+                            if(!dataSnapshot.getKey().equals(ticket)&&!dataSnap){
+                                hash = dataSnapshot.child("hash").getValue().toString();
+                                if(hash.equals(prevHash)){
+                                    scanVerified.setBackgroundResource(R.drawable.blockchain_true);
+                                }else{
+                                    scanVerified.setBackgroundResource(R.drawable.blockchain_false);
+                                }
+                            }else{
+                                dataSnap = true;
+                            }
+                        }
+
+                        @Override
+                        public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                        }
+
+                        @Override
+                        public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+                        }
+
+                        @Override
+                        public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+
+
                     dialog.show();
+
                 }
             }
 

@@ -1,6 +1,8 @@
 package ml.coppellcoders.notixclient;
 
 import android.content.Intent;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -12,11 +14,18 @@ import android.widget.TextView;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.squareup.picasso.Picasso;
+import java.security.MessageDigest;
+
 
 import java.util.Calendar;
+
+import ml.coppellcoders.notixclient.blockchain.Block;
 
 public class CheckoutActivity extends AppCompatActivity {
     private DatabaseReference mFirebaseRef,mFirebaseRefBus;
@@ -27,7 +36,7 @@ public class CheckoutActivity extends AppCompatActivity {
 
     Button apay, credit, face, buy;
 
-
+    String previousHash;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -110,10 +119,38 @@ public class CheckoutActivity extends AppCompatActivity {
                 if(!face.getText().toString().equals("Select a Face")){
                     pushid[0] = mFirebaseRef.push().getKey();
 
+
+                    mFirebaseRefBus.orderByKey().limitToLast(1).addChildEventListener(new ChildEventListener() {
+                        @Override
+                        public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                            previousHash = dataSnapshot.child("hash").getValue().toString();
+                        }
+
+                        @Override
+                        public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                        }
+
+                        @Override
+                        public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+                        }
+
+                        @Override
+                        public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+
                     mFirebaseRef.push().setValue(new BuyInfoModel(event.getDate(),event.getImg(),event.getName(),event.getVenue(),event.getCategory(),event.getAddress(),imgurl,name,event.getPrice(),event.getQuantity(),quant)).addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
-                            mFirebaseRefBus.push().setValue(new BuyInfoModel(event.getDate(),event.getImg(),event.getName(),event.getVenue(),event.getCategory(),event.getAddress(),imgurl,name,event.getPrice(),event.getQuantity(),quant)).addOnSuccessListener(new OnSuccessListener<Void>() {
+                            mFirebaseRefBus.push().setValue(new Block(event.getDate(),event.getImg(),event.getName(),event.getVenue(),event.getCategory(),event.getAddress(),imgurl,name,event.getPrice(),event.getQuantity(),quant,previousHash)).addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void aVoid) {
 
@@ -152,5 +189,22 @@ public class CheckoutActivity extends AppCompatActivity {
 
 
 
+    }
+    public static String applySha256(String input){
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            //Applies sha256 to our input,
+            byte[] hash = digest.digest(input.getBytes("UTF-8"));
+            StringBuffer hexString = new StringBuffer(); // This will contain hash as hexidecimal
+            for (int i = 0; i < hash.length; i++) {
+                String hex = Integer.toHexString(0xff & hash[i]);
+                if(hex.length() == 1) hexString.append('0');
+                hexString.append(hex);
+            }
+            return hexString.toString();
+        }
+        catch(Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }
