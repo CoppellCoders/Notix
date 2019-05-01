@@ -1,6 +1,6 @@
 # NoTix
 
-The smart and secure solution for events
+The smart and secure solution for events using facial recognition and Brother printers
 <img src="https://user-images.githubusercontent.com/36747258/57003391-14332380-6b8c-11e9-9b0c-46f77e174d9c.png" alt="NoTix Logo" height = "100px" width = "100px" align="right">
 
 Made by:
